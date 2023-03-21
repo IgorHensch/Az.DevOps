@@ -1,0 +1,14 @@
+name: Publish
+on: [workflow_dispatch]
+
+jobs:
+    build:
+      name: Publish
+      runs-on: ubuntu-latest
+      step:
+        - uses: actions/checkout@v1
+        - name: Publish
+          env:
+            API_KEY: ${{ secrets.API_KEY }}
+          run: .\Publish.ps1
+          shell: pwsh
