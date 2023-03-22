@@ -24,7 +24,7 @@ function Remove-AzDevOpsGitRepositorie {
         }
     }
     
-    $GitRepositoriesUri = "https://dev.azure.com/$($script:sharedData.Organization)/$($param.Project)/_apis/git/repositories/$($param.RepositoryId)`?api-version=$($script:sharedData.ApiVersion)"
+    $GitRepositoriesUri = "https://$($script:sharedData.CoreServer)/$($script:sharedData.Organization)/$($param.Project)/_apis/git/repositories/$($param.RepositoryId)`?api-version=$($script:sharedData.ApiVersion)"
     try {
         Invoke-RestMethod -Uri $GitRepositoriesUri -Method Delete -Headers $script:sharedData.Header
     }
