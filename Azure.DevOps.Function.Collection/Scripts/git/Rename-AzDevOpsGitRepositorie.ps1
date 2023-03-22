@@ -1,15 +1,33 @@
 function Rename-AzDevOpsGitRepositorie {
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName = 'General')]
     param (
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true, ParameterSetName = 'General')]  
         [string]$Project,
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true, ParameterSetName = 'General')]
         [string]$RepositoryId,
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = 'Pipeline')]
+        [PSCustomObject]$PipelineObject,
+        [Parameter(ParameterSetName = 'General')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'Pipeline')]
         [string]$NewName
     )
 
-    $GitRepositoriesUri = "https://dev.azure.com/$($script:sharedData.Organization)/$Project/_apis/git/repositories/$RepositoryId`?api-version=$($script:sharedData.ApiVersion)"
+    switch ($PSCmdlet.ParameterSetName) {
+        'General' {
+            $param = @{
+                Project      = $Project
+                RepositoryId = $RepositoryId
+            }
+        }
+        'Pipeline' {
+            $param = @{
+                Project      = $PipelineObject.project.name
+                RepositoryId = $PipelineObject.id
+            }
+        }
+    }
+
+    $GitRepositoriesUri = "https://dev.azure.com/$($script:sharedData.Organization)/$($param.Project)/_apis/git/repositories/$($param.RepositoryId)`?api-version=$($script:sharedData.ApiVersion)"
     $bodyData = @{
         name = $NewName
     }
