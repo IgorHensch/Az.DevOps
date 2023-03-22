@@ -1,13 +1,30 @@
 function Restore-AzDevOpsSoftDeletedGitRepositorie {
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName = 'General')]
     param (
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true, ParameterSetName = 'General')]  
         [string]$Project,
-        [Parameter(Mandatory = $true)]
-        [string]$RepositoryId
+        [Parameter(Mandatory = $true, ParameterSetName = 'General')]
+        [string]$RepositoryId,
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = 'Pipeline')]
+        [PSCustomObject]$PipelineObject
     )
 
-    $SoftDeletedGitRepositoriesUri = "https://dev.azure.com/$($script:sharedData.Organization)/$Project/_apis/git/recycleBin/repositories/$RepositoryId`?api-version=$($script:sharedData.ApiVersion)"
+    switch ($PSCmdlet.ParameterSetName) {
+        'General' {
+            $param = @{
+                Project      = $Project
+                RepositoryId = $RepositoryId
+            }
+        }
+        'Pipeline' {
+            $param = @{
+                Project      = $PipelineObject.project.name
+                RepositoryId = $PipelineObject.id
+            }
+        }
+    }
+
+    $SoftDeletedGitRepositoriesUri = "https://dev.azure.com/$($script:sharedData.Organization)/$($param.Project)/_apis/git/recycleBin/repositories/$($param.RepositoryId)`?api-version=$($script:sharedData.ApiVersion)"
     $bodyData = @{
         deleted = 'false'
     }

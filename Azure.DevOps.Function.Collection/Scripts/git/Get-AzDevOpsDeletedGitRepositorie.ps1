@@ -8,7 +8,7 @@ function Get-AzDevOpsDeletedGitRepositorie {
 
     $DeletedRepositoriesUri = "https://dev.azure.com/$($script:sharedData.Organization)/$Project/_apis/git/deletedrepositories?api-version=$($script:sharedData.ApiVersion)"
     try {
-        Write-Output -InputObject (Invoke-RestMethod -Uri $DeletedRepositoriesUri -Method Get -Headers $script:sharedData.Header).value | Where-Object { $_.name -imatch $Name }
+        Write-Output -InputObject (Invoke-RestMethod -Uri $DeletedRepositoriesUri -Method Get -Headers $script:sharedData.Header).value | Where-Object { $_.name -imatch "\b$Name\b" }
     }
     catch {
         throw $_
