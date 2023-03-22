@@ -24,7 +24,7 @@ function Restore-AzDevOpsSoftDeletedGitRepositorie {
         }
     }
 
-    $SoftDeletedGitRepositoriesUri = "https://dev.azure.com/$($script:sharedData.Organization)/$($param.Project)/_apis/git/recycleBin/repositories/$($param.RepositoryId)`?api-version=$($script:sharedData.ApiVersion)"
+    $SoftDeletedGitRepositoriesUri = "https://$($script:sharedData.CoreServer)/$($script:sharedData.Organization)/$($param.Project)/_apis/git/recycleBin/repositories/$($param.RepositoryId)`?api-version=$($script:sharedData.ApiVersion)"
     $bodyData = @{
         deleted = 'false'
     }
