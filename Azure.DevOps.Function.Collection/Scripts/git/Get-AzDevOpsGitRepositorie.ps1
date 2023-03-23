@@ -3,12 +3,12 @@ function Get-AzDevOpsGitRepositorie {
     param (
         [Parameter(Mandatory = $true)]
         [string]$Project,
-        [string]$Name
+        [string]$Name = '*'
     )
 
     $GitRepositoriesUri = "https://$($script:sharedData.CoreServer)/$($script:sharedData.Organization)/$Project/_apis/git/repositories/?api-version=$($script:sharedData.ApiVersion)"
     try {
-        Write-Output -InputObject  (Invoke-RestMethod -Uri $GitRepositoriesUri -Method Get -Headers $script:sharedData.Header).value | Where-Object { $_.name -imatch "\b$Name\b" }
+        Write-Output -InputObject  (Invoke-RestMethod -Uri $GitRepositoriesUri -Method Get -Headers $script:sharedData.Header).value | Where-Object { $_.name -imatch "^$Name$" }
     }
     catch {
         throw $_
