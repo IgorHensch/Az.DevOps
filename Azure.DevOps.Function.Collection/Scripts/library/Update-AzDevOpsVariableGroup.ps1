@@ -23,12 +23,11 @@ function Update-AzDevOpsVariableGroup {
                     }
                 }
             },
-            ErrorMessage = 'The hashtable must contain the following keys: Name, IsSecret, Value')]
+            ErrorMessage = 'The JSON has incorrect schema.')]
         $VariableCollectionJSON
     )
     
     $VariableCollectionHashtable = $VariableCollectionJSON | ConvertFrom-Json | ConvertTo-PSFHashtable
-    
     switch ($PSCmdlet.ParameterSetName) {
         'General' {
             $bodyData = @{

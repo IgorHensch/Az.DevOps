@@ -19,40 +19,38 @@ function New-AzDevOpsVariableGroup {
                 $HashTable = $_ | ConvertFrom-Json | ConvertTo-PSFHashtable 
                 foreach ($key in $HashTable.Keys) {
                     $HashTable | ForEach-Object {
-                        [bool]($key -cmatch '.+') -and ($_.$key| Get-Member -MemberType NoteProperty).Name -Contains 'IsSecret' -and ($_.$key| Get-Member -MemberType NoteProperty).Name -Contains 'Value'
+                        [bool]($key -cmatch '.+') -and ($_.$key | Get-Member -MemberType NoteProperty).Name -Contains 'IsSecret' -and ($_.$key | Get-Member -MemberType NoteProperty).Name -Contains 'Value'
                     }
                 }
             },
-            ErrorMessage = 'The hashtable must contain the following keys: Name, IsSecret, Value')]
+            ErrorMessage = 'The JSON has incorrect schema.')]
         $VariableCollectionJSON
     )
     
     $VariableCollectionHashtable = $VariableCollectionJSON | ConvertFrom-Json | ConvertTo-PSFHashtable
-
     switch ($PSCmdlet.ParameterSetName) {
         'General' {
             $bodyData = @{
                 variables = @{
                     $VariableName = @{
-                        value = $VariableValue
+                        value    = $VariableValue
                         isSecret = $IsSecret.IsPresent
                     }
                 }
-                name = $Name
-                type = 'Vsts'
+                name      = $Name
+                type      = 'Vsts'
             }
         }
         'JSON' {
             $bodyData = @{
                 variables = $VariableCollectionHashtable
-                name = $Name
-                type = 'Vsts'
+                name      = $Name
+                type      = 'Vsts'
             }
         }
     }
 
     $VariablegroupsUri = "https://$($script:sharedData.CoreServer)/$($script:sharedData.Organization)/$Project/_apis/distributedtask/variablegroups/?api-version=$($script:sharedData.ApiVersion)"
-
     $Body = $bodyData | ConvertTo-Json -Depth 10
     try {
         $Body 

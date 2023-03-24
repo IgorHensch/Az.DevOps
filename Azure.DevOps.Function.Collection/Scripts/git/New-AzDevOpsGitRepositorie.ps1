@@ -14,7 +14,6 @@ function New-AzDevOpsGitRepositorie {
     }
     $Body = $bodyData | ConvertTo-Json
     try {
-        $Body 
         Invoke-RestMethod -Uri $GitRepositoriesUri -Body $Body -Method Post -Headers $script:sharedData.Header -ContentType 'application/json'
     }
     catch {
