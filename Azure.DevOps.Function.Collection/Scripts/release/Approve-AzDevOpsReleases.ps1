@@ -1,8 +1,10 @@
 function Approve-AzDevOpsReleases {
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName = 'General')]
     param (
         [Parameter(Mandatory = $true, ParameterSetName = 'General')]
-        [array]$ApprovalUrls,
+        [array]$ApprovalId,
+        [Parameter(Mandatory = $true, ParameterSetName = 'General')]
+        [string]$Project,
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = 'Pipeline')]
         [PSCustomObject]$PipelineObject
     )
@@ -10,22 +12,26 @@ function Approve-AzDevOpsReleases {
     switch ($PSCmdlet.ParameterSetName) {
         'General' {
             $param = @{
-                ApprovalUrls = $ApprovalUrls
+                ApprovalId = $ApprovalId
+                Project    = $Project
             }
         }
         'Pipeline' {
             $param = @{
-                ApprovalUrls = $PipelineObject.url
+                ApprovalId = $PipelineObject.id
+                Project    = PipelineObject.project
             }
         }
     }
+
+    $ApprovalUrl = Get-AzDevOpsApprovals -Project $param.Project -Id $param.ApprovalId
+    $ApprovalsUri = "$ApprovalUrl`?api-version=$($script:sharedData.ApiVersionPreview)"
     $bodyData = @{
         status = "approved"
     }
     $Body = $bodyData | ConvertTo-Json
     try {
-        foreach($url in $param.ApprovalUrls) {
-            $ApprovalsUri = "$url?api-version=$($script:sharedData.ApiVersion)"
+        foreach ($url in $param.ApprovalUrls) {
             Invoke-RestMethod -Uri $ApprovalsUri -Method Patch -Body $Body -Headers $script:sharedData.Header -ContentType 'application/json'
         }
     }

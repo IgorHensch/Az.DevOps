@@ -7,7 +7,7 @@ function Get-AzDevOpsFeedViews {
     )
 
     $FeedUrl = (Get-AzDevOpsArtifactFeeds -Name $FeedName).url
-    $FeedViewsUri = "$FeedUrl/views?api-version=$($script:sharedData.ApiVersion)"
+    $FeedViewsUri = "$FeedUrl/views?api-version=$($script:sharedData.ApiVersionPreview)"
     try {
         Write-Output -InputObject  (Invoke-RestMethod -Uri $FeedViewsUri -Method Get -Headers $script:sharedData.Header).value | Where-Object { $_.name -imatch "^$Name$" }
     }

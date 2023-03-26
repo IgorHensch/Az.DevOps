@@ -7,7 +7,7 @@ function Get-AzDevOpsRecycleBinFeedPackages {
     )
 
     $FeedUrl = (Get-AzDevOpsArtifactFeeds -Name $FeedName).url
-    $RecycleBinPackagesUri = "$FeedUrl/RecycleBin/Packages?api-version=$($script:sharedData.ApiVersion)"
+    $RecycleBinPackagesUri = "$FeedUrl/RecycleBin/Packages?api-version=$($script:sharedData.ApiVersionPreview)"
     try {
         Write-Output -InputObject  (Invoke-RestMethod -Uri $RecycleBinPackagesUri -Method Get -Headers $script:sharedData.Header).value | Where-Object { $_.name -imatch "^$Name$" }
     }

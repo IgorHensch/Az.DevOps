@@ -25,7 +25,7 @@ function Remove-AzDevOpsVariableGroup {
         }
     }
 
-    $VariablegroupsUri = "https://$($script:sharedData.CoreServer)/$($script:sharedData.Organization)/$($param.Project)/_apis/distributedtask/variablegroups/$($param.VariableGroupId)?api-version=$($script:sharedData.ApiVersion)"
+    $VariablegroupsUri = "https://$($script:sharedData.CoreServer)/$($script:sharedData.Organization)/$($param.Project)/_apis/distributedtask/variablegroups/$($param.VariableGroupId)?api-version=$($script:sharedData.ApiVersionPreview)"
     try {
         if ($Force) {
             Invoke-RestMethod -Uri $VariablegroupsUri -Method Delete -Headers $script:sharedData.Header

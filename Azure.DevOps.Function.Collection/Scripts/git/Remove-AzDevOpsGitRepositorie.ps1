@@ -4,7 +4,7 @@ function Remove-AzDevOpsGitRepositorie {
         [Parameter(Mandatory = $true, ParameterSetName = 'General')]  
         [string]$Project,
         [Parameter(Mandatory = $true, ParameterSetName = 'General')]
-        [string]$RepositoryId,
+        [string]$Name,
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = 'Pipeline')]
         [PSCustomObject]$PipelineObject,
         [switch]$Force
@@ -13,34 +13,34 @@ function Remove-AzDevOpsGitRepositorie {
     switch ($PSCmdlet.ParameterSetName) {
         'General' {
             $param = @{
-                Project      = $Project
-                RepositoryId = $RepositoryId
+                Project = $Project
+                Name    = $Name
             }
         }
         'Pipeline' {
             $param = @{
-                Project      = $PipelineObject.project.name
-                RepositoryId = $PipelineObject.id
+                Project = $PipelineObject.project.name
+                Name    = $PipelineObject.name
             }
         }
     }
 
-    $GitRepositoriesUri = "https://$($script:sharedData.CoreServer)/$($script:sharedData.Organization)/$($param.Project)/_apis/git/repositories/$($param.RepositoryId)`?api-version=$($script:sharedData.ApiVersion)"
+    $GitRepositorie = Get-AzDevOpsGitRepositorie -Project $param.Project -Name $param.Name
+    $GitRepositoriesUri = "$($GitRepositorie.url)?api-version=$($script:sharedData.ApiVersionPreview)"
     try {
         if ($Force) {
             Invoke-RestMethod -Uri $GitRepositoriesUri -Method Delete -Headers $script:sharedData.Header
         }
         else {
-            $response = Invoke-RestMethod -Uri $GitRepositoriesUri -Method Get -Headers $script:sharedData.Header
-            $response
-            $title = "Delete $($response.name) Git repository."
+            $GitRepositorie
+            $title = "Delete $($GitRepositorie.name) Git repository."
             $question = 'Do you want to continue?'
             $choices = '&Yes', '&No'
             
             $decision = $Host.UI.PromptForChoice($title, $question, $choices, 1)
             if ($decision -eq 0) {
                 Invoke-RestMethod -Uri $GitRepositoriesUri -Method Delete -Headers $script:sharedData.Header
-                Write-Host "Git repository $($response.name) has been deleted."
+                Write-Host "Git repository $($GitRepositorie.name) has been deleted."
             }
             else {
                 Write-Host 'Canceled!'

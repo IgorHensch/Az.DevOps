@@ -7,7 +7,7 @@ function Get-AzDevOpsFeedPermissions {
     )
 
     $FeedUrl = (Get-AzDevOpsArtifactFeeds -Name $FeedName).url
-    $FeedPermissionsUri = "$FeedUrl/permissions?api-version=$($script:sharedData.ApiVersion)"
+    $FeedPermissionsUri = "$FeedUrl/permissions?api-version=$($script:sharedData.ApiVersionPreview)"
     try {
         Write-Output -InputObject  (Invoke-RestMethod -Uri $FeedPermissionsUri -Method Get -Headers $script:sharedData.Header).value | Where-Object { $_.name -imatch "^$Name$" }
     }

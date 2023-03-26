@@ -11,21 +11,21 @@ function Restore-AzDevOpsRecycleBinFeed {
     switch ($PSCmdlet.ParameterSetName) {
         'General' {
             $param = @{
-                FeedName      = $FeedName
+                FeedName = $FeedName
             }
         }
         'Pipeline' {
             $param = @{
-                FeedName      = $PipelineObject.name
+                FeedName = $PipelineObject.name
             }
         }
     }
 
     $Feed = Get-AzDevOpsRecycleBinFeeds -Name $param.FeedName
-    $RecycleBinFeedsUri = "https://feeds.$($script:sharedData.CoreServer)/$($script:sharedData.Organization)/_apis/packaging/feedrecyclebin/$($Feed.id)?api-version=$($script:sharedData.ApiVersion)"
+    $RecycleBinFeedsUri = "https://feeds.$($script:sharedData.CoreServer)/$($script:sharedData.Organization)/_apis/packaging/feedrecyclebin/$($Feed.id)?api-version=$($script:sharedData.ApiVersionPreview)"
     $bodyData = @{
-        op = 'replace'
-        path = '/isDeleted'
+        op    = 'replace'
+        path  = '/isDeleted'
         value = $false
     }
     $Body = $bodyData | ConvertTo-Json

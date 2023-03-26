@@ -10,11 +10,11 @@ function New-AzDevOpsFeedView {
     )
 
     $FeedUrl = (Get-AzDevOpsArtifactFeeds -Name $FeedName).url
-    $FeedViewsUri = "$FeedUrl/views?api-version=$($script:sharedData.ApiVersion)"
+    $FeedViewsUri = "$FeedUrl/views?api-version=$($script:sharedData.ApiVersionPreview)"
     $bodyData = @{
         visibility = $Visibility
-        name = $Name
-        type = $Type
+        name       = $Name
+        type       = $Type
     }
     $Body = $bodyData | ConvertTo-Json
     try {
