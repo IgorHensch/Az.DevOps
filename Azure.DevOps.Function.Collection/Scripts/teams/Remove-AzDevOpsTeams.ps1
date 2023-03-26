@@ -1,8 +1,8 @@
-function Remove-AzDevOpsRecycleBinFeed {
+function Remove-AzDevOpsTeams {
     [CmdletBinding(DefaultParameterSetName = 'General')]
     param (
         [Parameter(Mandatory = $true, ParameterSetName = 'General')]  
-        [string]$FeedName,
+        [string]$TeamName,
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = 'Pipeline')]
         [PSCustomObject]$PipelineObject,
         [switch]$Force
@@ -11,32 +11,32 @@ function Remove-AzDevOpsRecycleBinFeed {
     switch ($PSCmdlet.ParameterSetName) {
         'General' {
             $param = @{
-                FeedName = $FeedName
+                TeamName = $TeamName
             }
         }
         'Pipeline' {
             $param = @{
-                FeedName = $PipelineObject.name
+                TeamName = $PipelineObject.name
             }
         }
     }
 
-    $Feed = Get-AzDevOpsRecycleBinFeeds -Name $param.FeedName
-    $RecycleBinFeedsUri = "https://feeds.$($script:sharedData.CoreServer)/$($script:sharedData.Organization)/_apis/packaging/feedrecyclebin/$($Feed.id)?api-version=$($script:sharedData.ApiVersionPreview)"
+    $Team = Get-AzDevOpsTeams -Name $param.TeamName
+    $TeamUri = "$($Team.url)?api-version=$($script:sharedData.ApiVersionPreview)"
     try {
         if ($Force) {
-            Invoke-RestMethod -Uri $RecycleBinFeedsUri -Method Delete -Headers $script:sharedData.Header
+            Invoke-RestMethod -Uri $TeamUri -Method Delete -Headers $script:sharedData.Header
         }
         else {
-            $Feed
-            $title = "Delete $($Feed.name) Feed from recycle bin."
+            $Team
+            $title = "Delete $($Team.name) Feed from recycle bin."
             $question = 'Do you want to continue?'
             $choices = '&Yes', '&No'
             
             $decision = $Host.UI.PromptForChoice($title, $question, $choices, 1)
             if ($decision -eq 0) {
-                Invoke-RestMethod -Uri $RecycleBinFeedsUri -Method Delete -Headers $script:sharedData.Header
-                Write-Host "Feed $($response.name) has been deleted from recycle bin."
+                Invoke-RestMethod -Uri $TeamUri -Method Delete -Headers $script:sharedData.Header
+                Write-Host "Team $($Team.name) has been deleted."
             }
             else {
                 Write-Host 'Canceled!'

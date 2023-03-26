@@ -7,7 +7,7 @@ function New-AzDevOpsGitRepositorie {
         [string]$Name
     )
 
-    $GitRepositoriesUri = "https://$($script:sharedData.CoreServer)/$($script:sharedData.Organization)/$Project/_apis/git/repositories/?api-version=$($script:sharedData.ApiVersion)"
+    $GitRepositoriesUri = "https://$($script:sharedData.CoreServer)/$($script:sharedData.Organization)/$Project/_apis/git/repositories/?api-version=$($script:sharedData.ApiVersionPreview)"
     $bodyData = @{
         name    = $Name
         project = @{ id = $((Get-AzDevOpsProject -Name $Project).id) }

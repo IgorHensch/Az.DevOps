@@ -27,7 +27,6 @@ function New-AzDevOpsVariableGroup {
         $VariableCollectionJSON
     )
     
-    $VariableCollectionHashtable = $VariableCollectionJSON | ConvertFrom-Json | ConvertTo-PSFHashtable
     switch ($PSCmdlet.ParameterSetName) {
         'General' {
             $bodyData = @{
@@ -42,18 +41,18 @@ function New-AzDevOpsVariableGroup {
             }
         }
         'JSON' {
+            $VariableCollectionHashtable = $VariableCollectionJSON | ConvertFrom-Json | ConvertTo-PSFHashtable
             $bodyData = @{
                 variables = $VariableCollectionHashtable
                 name      = $Name
                 type      = 'Vsts'
-            }
+            } 
         }
     }
 
-    $VariablegroupsUri = "https://$($script:sharedData.CoreServer)/$($script:sharedData.Organization)/$Project/_apis/distributedtask/variablegroups/?api-version=$($script:sharedData.ApiVersion)"
+    $VariablegroupsUri = "https://$($script:sharedData.CoreServer)/$($script:sharedData.Organization)/$Project/_apis/distributedtask/variablegroups/?api-version=$($script:sharedData.ApiVersionPreview)"
     $Body = $bodyData | ConvertTo-Json -Depth 10
     try {
-        $Body 
         Invoke-RestMethod -Uri $VariablegroupsUri -Body $Body -Method Post -Headers $script:sharedData.Header -ContentType 'application/json'
     }
     catch {

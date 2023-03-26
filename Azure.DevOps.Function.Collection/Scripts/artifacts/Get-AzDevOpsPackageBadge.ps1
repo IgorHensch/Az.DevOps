@@ -1,5 +1,5 @@
 function Get-AzDevOpsPackageBadge {
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName = 'General')]
     param (
         [Parameter(Mandatory = $true, ParameterSetName = 'General')]
         [string]$FeedName,
@@ -23,7 +23,7 @@ function Get-AzDevOpsPackageBadge {
         }
     }
 
-    $PackageBadgeUri = "$($param.PackageUrl)/badge?api-version=$($script:sharedData.ApiVersion)"
+    $PackageBadgeUri = "$($param.PackageUrl)/badge?api-version=$($script:sharedData.ApiVersionPreview)"
     try {
         Write-Output -InputObject  (Invoke-RestMethod -ContentType 'image/svg+xml' -Uri $PackageBadgeUri -Method Get -Headers $script:sharedData.Header).value | Where-Object { $_.name -imatch "^$Name$" }
     }

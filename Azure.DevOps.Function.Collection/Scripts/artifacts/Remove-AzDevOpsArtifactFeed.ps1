@@ -11,18 +11,18 @@ function Remove-AzDevOpsArtifactFeed {
     switch ($PSCmdlet.ParameterSetName) {
         'General' {
             $param = @{
-                FeedName      = $FeedName
+                FeedName = $FeedName
             }
         }
         'Pipeline' {
             $param = @{
-                FeedName      = $PipelineObject.name
+                FeedName = $PipelineObject.name
             }
         }
     }
 
     $FeedUrl = (Get-AzDevOpsArtifactFeeds -Name $param.FeedName).url
-    $ArtifactFeedsUri = "$FeedUrl`?api-version=$($script:sharedData.ApiVersion)"
+    $ArtifactFeedsUri = "$FeedUrl`?api-version=$($script:sharedData.ApiVersionPreview)"
     try {
         if ($Force) {
             Invoke-RestMethod -Uri $ArtifactFeedsUri -Method Delete -Headers $script:sharedData.Header
