@@ -4,7 +4,7 @@ function Remove-AzDevOpsVariableGroup {
         [Parameter(Mandatory = $true, ParameterSetName = 'General')]  
         [string]$Project,
         [Parameter(Mandatory = $true, ParameterSetName = 'General')]
-        [string]$VariableGroupId,
+        [string]$Name,
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = 'Pipeline', ValueFromRemainingArguments)]
         $PipelineObject,
         [switch]$Force
@@ -14,33 +14,33 @@ function Remove-AzDevOpsVariableGroup {
         'General' {
             $param = @{
                 Project         = $Project
-                VariableGroupId = $VariableGroupId
+                VariableGroupId = $Name
             }
         }
         'Pipeline' {
             $param = @{
-                Project         = $PipelineObject.project
-                VariableGroupId = $PipelineObject.id
+                Project = $PipelineObject.project
+                Name    = $PipelineObject.name
             }
         }
     }
-
-    $VariablegroupsUri = "https://$($script:sharedData.CoreServer)/$($script:sharedData.Organization)/$($param.Project)/_apis/distributedtask/variablegroups/$($param.VariableGroupId)?api-version=$($script:sharedData.ApiVersionPreview)"
+    $Variablegroup = Get-AzDevOpsVariableGroups -Project $param.Project -Name $param.Name
+    $VariablegroupsUri = "https://$($script:sharedData.CoreServer)/$($script:sharedData.Organization)/$($param.Project)/_apis/distributedtask/variablegroups/$($Variablegroup.id)?api-version=$($script:sharedData.ApiVersionPreview)"
     try {
         if ($Force) {
             Invoke-RestMethod -Uri $VariablegroupsUri -Method Delete -Headers $script:sharedData.Header
+            Write-Host "Variable group $($Variablegroup.name) has been deleted."
         }
         else {
-            $response = Invoke-RestMethod -Uri $VariablegroupsUri -Method Get -Headers $script:sharedData.Header
-            $response
-            $title = "Delete $($response.name) variable group."
+            $Variablegroup
+            $title = "Delete $($Variablegroup.name) variable group."
             $question = 'Do you want to continue?'
             $choices = '&Yes', '&No'
             
             $decision = $Host.UI.PromptForChoice($title, $question, $choices, 1)
             if ($decision -eq 0) {
                 Invoke-RestMethod -Uri $VariablegroupsUri -Method Delete -Headers $script:sharedData.Header
-                Write-Host "Variable group $($response.name) has been deleted."
+                Write-Host "Variable group $($Variablegroup.name) has been deleted."
             }
             else {
                 Write-Host 'Canceled!'

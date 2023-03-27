@@ -23,8 +23,8 @@ function Start-DownloadAzDevOpsReleasesLogs {
         }
     }
     try {
-            $ReleaseUri = "$($param.ReleaseUrl)/logs?api-version=$($script:sharedData.ApiVersionPreview)"
-            Invoke-RestMethod -Uri $ReleaseUri -Method Get -Headers $script:sharedData.Header -ContentType 'application/zip' -OutFile "$DownloadPath/Release-$($param.ReleaseUrl.Split('/')[-1]).zip"
+        $ReleaseUri = "$($param.ReleaseUrl)/logs?api-version=$($script:sharedData.ApiVersionPreview)"
+        Invoke-RestMethod -Uri $ReleaseUri -Method Get -Headers $script:sharedData.Header -ContentType 'application/zip' -OutFile "$DownloadPath/Release-$($param.ReleaseUrl.Split('/')[-1]).zip"
     }
     catch {
         throw $_

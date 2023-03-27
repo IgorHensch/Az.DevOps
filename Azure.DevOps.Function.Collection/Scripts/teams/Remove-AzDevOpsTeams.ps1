@@ -26,6 +26,7 @@ function Remove-AzDevOpsTeams {
     try {
         if ($Force) {
             Invoke-RestMethod -Uri $TeamUri -Method Delete -Headers $script:sharedData.Header
+            Write-Host "Team $($Team.name) has been deleted."
         }
         else {
             $Team

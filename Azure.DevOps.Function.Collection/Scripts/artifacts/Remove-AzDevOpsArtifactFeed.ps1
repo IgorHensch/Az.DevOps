@@ -21,23 +21,23 @@ function Remove-AzDevOpsArtifactFeed {
         }
     }
 
-    $FeedUrl = (Get-AzDevOpsArtifactFeeds -Name $param.FeedName).url
-    $ArtifactFeedsUri = "$FeedUrl`?api-version=$($script:sharedData.ApiVersionPreview)"
+    $Feed = Get-AzDevOpsArtifactFeeds -Name $param.FeedName
+    $ArtifactFeedsUri = "$($Feed.url)`?api-version=$($script:sharedData.ApiVersionPreview)"
     try {
         if ($Force) {
             Invoke-RestMethod -Uri $ArtifactFeedsUri -Method Delete -Headers $script:sharedData.Header
+            Write-Host "Feed $($Feed.name) has been deleted."
         }
         else {
-            $response = Invoke-RestMethod -Uri $ArtifactFeedsUri -Method Get -Headers $script:sharedData.Header
-            $response
-            $title = "Delete $($response.name) Feed."
+            $Feed
+            $title = "Delete $($Feed.name) Feed."
             $question = 'Do you want to continue?'
             $choices = '&Yes', '&No'
             
             $decision = $Host.UI.PromptForChoice($title, $question, $choices, 1)
             if ($decision -eq 0) {
                 Invoke-RestMethod -Uri $ArtifactFeedsUri -Method Delete -Headers $script:sharedData.Header
-                Write-Host "Feed $($response.name) has been deleted."
+                Write-Host "Feed $($Feed.name) has been deleted."
             }
             else {
                 Write-Host 'Canceled!'
