@@ -26,6 +26,7 @@ function Remove-AzDevOpsRecycleBinFeed {
     try {
         if ($Force) {
             Invoke-RestMethod -Uri $RecycleBinFeedsUri -Method Delete -Headers $script:sharedData.Header
+            Write-Host "Feed $($Feed.name) has been deleted from recycle bin."
         }
         else {
             $Feed
@@ -36,7 +37,7 @@ function Remove-AzDevOpsRecycleBinFeed {
             $decision = $Host.UI.PromptForChoice($title, $question, $choices, 1)
             if ($decision -eq 0) {
                 Invoke-RestMethod -Uri $RecycleBinFeedsUri -Method Delete -Headers $script:sharedData.Header
-                Write-Host "Feed $($response.name) has been deleted from recycle bin."
+                Write-Host "Feed $($Feed.name) has been deleted from recycle bin."
             }
             else {
                 Write-Host 'Canceled!'

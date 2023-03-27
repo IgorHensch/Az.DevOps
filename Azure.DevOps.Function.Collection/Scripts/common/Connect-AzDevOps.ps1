@@ -5,7 +5,7 @@ function Connect-AzDevOps {
         [string]$PersonalAccessToken,
         [Parameter(Mandatory = $true)]
         [string]$Organization,
-        [string]$ApiVersion = '7.1',
+        [string]$ApiVersion = '7.0',
         [string]$ApiVersionPreview = '7.1-preview.1',
         [string]$ApiVersion1Preview2 = '7.1-preview.2',
         [string]$CoreServer = 'dev.azure.com'

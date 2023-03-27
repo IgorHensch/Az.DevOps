@@ -30,6 +30,7 @@ function Remove-AzDevOpsGitRepositorie {
     try {
         if ($Force) {
             Invoke-RestMethod -Uri $GitRepositoriesUri -Method Delete -Headers $script:sharedData.Header
+            Write-Host "Git repository $($GitRepositorie.name) has been deleted."
         }
         else {
             $GitRepositorie

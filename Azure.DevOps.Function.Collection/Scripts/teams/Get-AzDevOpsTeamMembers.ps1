@@ -23,7 +23,6 @@ function Get-AzDevOpsTeamMembers {
 
     $TeamUrl = (Get-AzDevOpsTeams -Name $param.TeamName).url
     $TeamMembersUri = "$TeamUrl/members?$mine=false&$top=10&$skip&api-version=$($script:sharedData.ApiVersionPreview)"
-    $TeamMembersUri
     try {
         Write-Output -InputObject  (Invoke-RestMethod -Uri $TeamMembersUri -Method Get -Headers $script:sharedData.Header).value | Where-Object { $_.name -imatch "^$Name$" }
     }
