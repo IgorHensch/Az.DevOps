@@ -1,4 +1,15 @@
 function Get-AzDevOpsFeedChanges {
+    <#
+    .SYNOPSIS
+        Gets Azure DevOps Feed Changes
+    .DESCRIPTION
+        Gets Feed Changes from Azure Devops Artifact.
+    .EXAMPLE
+        Get-AzDevOpsFeedChanges
+    .EXAMPLE
+        Get-AzDevOpsFeedChanges -Name 'FeedName'
+    #>
+
     [CmdletBinding()]
     param (
         [string]$Name = '*'

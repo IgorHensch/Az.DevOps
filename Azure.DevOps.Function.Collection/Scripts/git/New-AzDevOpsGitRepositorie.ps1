@@ -9,7 +9,7 @@ function New-AzDevOpsGitRepositorie {
     $gitRepositoriesUri = "https://$($script:sharedData.CoreServer)/$($script:sharedData.Organization)/$Project/_apis/git/repositories/?api-version=$($script:sharedData.ApiVersionPreview)"
     $bodyData = @{
         name    = $Name
-        project = @{ id = $((Get-AzDevOpsProject -Name $Project).id) }
+        project = @{ id = $((Get-AzDevOpsProjects -Name $Project).id) }
     }
     $body = $bodyData | ConvertTo-Json
     try {

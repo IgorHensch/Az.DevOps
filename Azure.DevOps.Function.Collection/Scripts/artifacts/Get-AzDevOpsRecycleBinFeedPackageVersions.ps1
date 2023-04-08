@@ -1,4 +1,21 @@
 function Get-AzDevOpsRecycleBinFeedPackageVersions {
+    <#
+    .SYNOPSIS
+        Gets Azure DevOps deleted Feed Packages by Version
+    .DESCRIPTION
+        Gets deleted Feed Packages by Version from Azure Devops Artifact Recycle Bin.
+    .LINK
+        Get-AzDevOpsRecycleBinFeedPackages
+    .EXAMPLE
+        Get-AzDevOpsRecycleBinFeedPackageVersions -FeedName 'FeedName' -PackageName 'PackageName'
+    .EXAMPLE
+        Get-AzDevOpsRecycleBinFeedPackageVersions -FeedName 'FeedName' -PackageName 'PackageName' -Version 'PackageVersion'
+    .EXAMPLE
+        Get-AzDevOpsRecycleBinFeedPackages -FeedName 'FeedName' | Get-AzDevOpsRecycleBinFeedPackageVersions'
+    .EXAMPLE
+        Get-AzDevOpsRecycleBinFeedPackages -FeedName 'FeedName' -Name 'PackageName' | Get-AzDevOpsRecycleBinFeedPackageVersions
+    #>
+
     [CmdletBinding(DefaultParameterSetName = 'General')]
     param (
         [Parameter(Mandatory = $true, ParameterSetName = 'General')]

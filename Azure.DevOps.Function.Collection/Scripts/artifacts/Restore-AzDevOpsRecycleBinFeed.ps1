@@ -1,4 +1,19 @@
 function Restore-AzDevOpsRecycleBinFeed {
+    <#
+    .SYNOPSIS
+        Restore Azure DevOps Artifact deleted Feeds 
+    .DESCRIPTION
+        Restore deleted Feeds from Azure Devops Artifact Recycle Bin.
+    .LINK
+        Get-AzDevOpsRecycleBinFeeds
+    .EXAMPLE
+        Restore-AzDevOpsRecycleBinFeed -FeedName 'FeedName'
+    .EXAMPLE
+        Restore-AzDevOpsRecycleBinFeed -FeedName 'FeedName' -Force
+    .EXAMPLE
+        Get-AzDevOpsRecycleBinFeeds -Name 'FeedName' | Restore-AzDevOpsRecycleBinFeed
+    #>
+
     [CmdletBinding(DefaultParameterSetName = 'General')]
     param (
         [string]$Project,

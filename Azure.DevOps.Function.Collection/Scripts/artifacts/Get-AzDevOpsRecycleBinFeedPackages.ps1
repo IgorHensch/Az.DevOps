@@ -1,4 +1,15 @@
 function Get-AzDevOpsRecycleBinFeedPackages {
+    <#
+    .SYNOPSIS
+        Gets Azure DevOps deleted Feed Packages
+    .DESCRIPTION
+        Gets deleted Feed Packages from Azure Devops Artifact Recycle Bin.
+    .EXAMPLE
+        Get-AzDevOpsRecycleBinFeedPackages -FeedName 'FeedName'
+    .EXAMPLE
+        Get-AzDevOpsRecycleBinFeedPackages -FeedName 'FeedName' -Name 'PackageName'
+    #>
+
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true)]

@@ -24,7 +24,7 @@ function Remove-AzDevOpsGitRepositorie {
                 }
             }
         }
-        $gitRepositorie = Get-AzDevOpsGitRepositorie -Project $param.Project -Name $param.Name
+        $gitRepositorie = Get-AzDevOpsGitRepositories -Project $param.Project -Name $param.Name
         $gitRepositoriesUri = "$($gitRepositorie.url)?api-version=$($script:sharedData.ApiVersionPreview)"
         try {
             if ($Force) {
