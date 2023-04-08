@@ -7,34 +7,33 @@ function Restore-AzDevOpsRecycleBinFeed {
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = 'Pipeline')]
         [PSCustomObject]$PipelineObject
     )
-
-    switch ($PSCmdlet.ParameterSetName) {
-        'General' {
-            $param = @{
-                FeedName = $FeedName
+    process {
+        switch ($PSCmdlet.ParameterSetName) {
+            'General' {
+                $param = @{
+                    FeedName = $FeedName
+                }
+            }
+            'Pipeline' {
+                $param = @{
+                    FeedName = $PipelineObject.name
+                }
             }
         }
-        'Pipeline' {
-            $param = @{
-                FeedName = $PipelineObject.name
-            }
+        $feed = Get-AzDevOpsRecycleBinFeeds -Name $param.FeedName
+        $recycleBinFeedsUri = "https://feeds.$($script:sharedData.CoreServer)/$($script:sharedData.Organization)/_apis/packaging/feedrecyclebin/$($feed.id)?api-version=$($script:sharedData.ApiVersionPreview)"
+        $bodyData = @{
+            op    = 'replace'
+            path  = '/isDeleted'
+            value = $false
         }
-    }
-
-    $Feed = Get-AzDevOpsRecycleBinFeeds -Name $param.FeedName
-    $RecycleBinFeedsUri = "https://feeds.$($script:sharedData.CoreServer)/$($script:sharedData.Organization)/_apis/packaging/feedrecyclebin/$($Feed.id)?api-version=$($script:sharedData.ApiVersionPreview)"
-    $bodyData = @{
-        op    = 'replace'
-        path  = '/isDeleted'
-        value = $false
-    }
-    $Body = $bodyData | ConvertTo-Json
-
-    try {
-        Invoke-RestMethod -Uri $RecycleBinFeedsUri -Body "[$Body]" -Method Patch -Headers $script:sharedData.Header -ContentType 'application/json-patch+json'
-        Write-Host "Feed $($param.FeedName) has been successfully restored!" -ForegroundColor Green
-    }
-    catch {
-        throw $_
+        $body = $bodyData | ConvertTo-Json -AsArray
+        try {
+            Invoke-RestMethod -Uri $recycleBinFeedsUri -Body $body -Method Patch -Headers $script:sharedData.Header -ContentType 'application/json-patch+json'
+            Write-Host "Feed $($param.FeedName) has been successfully restored!" -ForegroundColor Green
+        }
+        catch {
+            throw $_
+        }
     }
 }

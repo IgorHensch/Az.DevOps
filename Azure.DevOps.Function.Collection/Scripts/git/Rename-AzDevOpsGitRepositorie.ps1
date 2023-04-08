@@ -11,33 +11,33 @@ function Rename-AzDevOpsGitRepositorie {
         [Parameter(Mandatory = $true, ParameterSetName = 'Pipeline')]
         [string]$NewName
     )
-
-    switch ($PSCmdlet.ParameterSetName) {
-        'General' {
-            $param = @{
-                Project = $Project
-                Name    = $Name
+    process {
+        switch ($PSCmdlet.ParameterSetName) {
+            'General' {
+                $param = @{
+                    Project = $Project
+                    Name    = $Name
+                }
+            }
+            'Pipeline' {
+                $param = @{
+                    Project = $PipelineObject.project.name
+                    Name    = $PipelineObject.name
+                }
             }
         }
-        'Pipeline' {
-            $param = @{
-                Project = $PipelineObject.project.name
-                Name    = $PipelineObject.name
-            }
+        $gitRepositorie = Get-AzDevOpsGitRepositorie -Project $param.Project -Name $param.Name
+        $gitRepositoriesUri = "$($gitRepositorie.url)?api-version=$($script:sharedData.ApiVersionPreview)"
+        $bodyData = @{
+            name = $NewName
         }
-    }
-
-    $GitRepositorie = Get-AzDevOpsGitRepositorie -Project $param.Project -Name $param.Name
-    $GitRepositoriesUri = "$($GitRepositorie.url)?api-version=$($script:sharedData.ApiVersionPreview)"
-    $bodyData = @{
-        name = $NewName
-    }
-    $Body = $bodyData | ConvertTo-Json
-    try {
-        $Body 
-        Invoke-RestMethod -Uri $GitRepositoriesUri -Body $Body -Method Patch -Headers $script:sharedData.Header -ContentType 'application/json'
-    }
-    catch {
-        throw $_
+        $body = $bodyData | ConvertTo-Json
+        try {
+            $body 
+            Invoke-RestMethod -Uri $gitRepositoriesUri -Body $body -Method Patch -Headers $script:sharedData.Header -ContentType 'application/json'
+        }
+        catch {
+            throw $_
+        }
     }
 }

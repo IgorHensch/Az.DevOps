@@ -7,16 +7,15 @@ function New-AzDevOpsTeams {
         [string]$Name,
         [string]$Description
     )
-
-    $ProjectUrl = (Get-AzDevOpsProject -Name $Project).url
-    $TeamsUri = "$ProjectUrl/teams?api-version=$($script:sharedData.ApiVersionPreview)"
+    $projectUrl = (Get-AzDevOpsProject -Name $Project).url
+    $teamsUri = "$ProjectUrl/teams?api-version=$($script:sharedData.ApiVersionPreview)"
     $bodyData = @{
         name        = $Name
         description = $Description
     }
-    $Body = $bodyData | ConvertTo-Json
+    $body = $bodyData | ConvertTo-Json
     try {
-        Invoke-RestMethod -Uri $TeamsUri -Body $Body -Method Post -Headers $script:sharedData.Header -ContentType 'application/json'
+        Invoke-RestMethod -Uri $teamsUri -Body $body -Method Post -Headers $script:sharedData.Header -ContentType 'application/json'
     }
     catch {
         throw $_

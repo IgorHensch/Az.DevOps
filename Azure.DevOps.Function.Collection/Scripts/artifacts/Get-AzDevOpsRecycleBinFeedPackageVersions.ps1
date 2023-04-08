@@ -10,27 +10,27 @@ function Get-AzDevOpsRecycleBinFeedPackageVersions {
         [PSCustomObject]$PipelineObject
         
     )
-
-    switch ($PSCmdlet.ParameterSetName) {
-        'General' {
-            $param = @{
-                RecycleBinFeedPackageUrl = (Get-AzDevOpsRecycleBinFeedPackages -FeedName $FeedName -name $PackageName).url
-                PackageName              = $PackageName
+    process {
+        switch ($PSCmdlet.ParameterSetName) {
+            'General' {
+                $param = @{
+                    RecycleBinFeedPackageUrl = (Get-AzDevOpsRecycleBinFeedPackages -FeedName $FeedName -name $PackageName).url
+                    PackageName              = $PackageName
+                }
+            }
+            'Pipeline' {
+                $param = @{
+                    RecycleBinFeedPackageUrl = $PipelineObject.url
+                    PackageName              = $PipelineObject.name
+                }
             }
         }
-        'Pipeline' {
-            $param = @{
-                RecycleBinFeedPackageUrl = $PipelineObject.url
-                PackageName              = $PipelineObject.name
-            }
+        $recycleBinFeedPackageVersions = "$($param.RecycleBinFeedPackageUrl)/Versions?api-version=$($script:sharedData.ApiVersionPreview)"
+        try {
+            Write-Output -InputObject  (Invoke-RestMethod -Uri $recycleBinFeedPackageVersions -Method Get -Headers $script:sharedData.Header).value | Where-Object { $_.name -imatch "^$Version$" }
         }
-    }
-
-    $RecycleBinFeedPackageVersions = "$($param.RecycleBinFeedPackageUrl)/Versions?api-version=$($script:sharedData.ApiVersionPreview)"
-    try {
-        Write-Output -InputObject  (Invoke-RestMethod -Uri $RecycleBinFeedPackageVersions -Method Get -Headers $script:sharedData.Header).value | Where-Object { $_.name -imatch "^$Version$" }
-    }
-    catch {
-        throw $_
+        catch {
+            throw $_
+        }
     }
 }

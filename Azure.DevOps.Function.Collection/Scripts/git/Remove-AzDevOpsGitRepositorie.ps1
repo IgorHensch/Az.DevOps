@@ -9,46 +9,46 @@ function Remove-AzDevOpsGitRepositorie {
         [PSCustomObject]$PipelineObject,
         [switch]$Force
     )
-
-    switch ($PSCmdlet.ParameterSetName) {
-        'General' {
-            $param = @{
-                Project = $Project
-                Name    = $Name
+    process {
+        switch ($PSCmdlet.ParameterSetName) {
+            'General' {
+                $param = @{
+                    Project = $Project
+                    Name    = $Name
+                }
+            }
+            'Pipeline' {
+                $param = @{
+                    Project = $PipelineObject.project.name
+                    Name    = $PipelineObject.name
+                }
             }
         }
-        'Pipeline' {
-            $param = @{
-                Project = $PipelineObject.project.name
-                Name    = $PipelineObject.name
-            }
-        }
-    }
-
-    $GitRepositorie = Get-AzDevOpsGitRepositorie -Project $param.Project -Name $param.Name
-    $GitRepositoriesUri = "$($GitRepositorie.url)?api-version=$($script:sharedData.ApiVersionPreview)"
-    try {
-        if ($Force) {
-            Invoke-RestMethod -Uri $GitRepositoriesUri -Method Delete -Headers $script:sharedData.Header
-            Write-Host "Git repository $($GitRepositorie.name) has been deleted."
-        }
-        else {
-            $GitRepositorie
-            $title = "Delete $($GitRepositorie.name) Git repository."
-            $question = 'Do you want to continue?'
-            $choices = '&Yes', '&No'
-            
-            $decision = $Host.UI.PromptForChoice($title, $question, $choices, 1)
-            if ($decision -eq 0) {
-                Invoke-RestMethod -Uri $GitRepositoriesUri -Method Delete -Headers $script:sharedData.Header
-                Write-Host "Git repository $($GitRepositorie.name) has been deleted."
+        $gitRepositorie = Get-AzDevOpsGitRepositorie -Project $param.Project -Name $param.Name
+        $gitRepositoriesUri = "$($gitRepositorie.url)?api-version=$($script:sharedData.ApiVersionPreview)"
+        try {
+            if ($Force) {
+                Invoke-RestMethod -Uri $gitRepositoriesUri -Method Delete -Headers $script:sharedData.Header
+                Write-Host "Git repository $($gitRepositorie.name) has been deleted."
             }
             else {
-                Write-Host 'Canceled!'
+                $gitRepositorie
+                $title = "Delete $($gitRepositorie.name) Git repository."
+                $question = 'Do you want to continue?'
+                $choices = '&Yes', '&No'
+            
+                $decision = $Host.UI.PromptForChoice($title, $question, $choices, 1)
+                if ($decision -eq 0) {
+                    Invoke-RestMethod -Uri $gitRepositoriesUri -Method Delete -Headers $script:sharedData.Header
+                    Write-Host "Git repository $($gitRepositorie.name) has been deleted."
+                }
+                else {
+                    Write-Host 'Canceled!'
+                }
             }
         }
-    }
-    catch {
-        throw $_
+        catch {
+            throw $_
+        }
     }
 }

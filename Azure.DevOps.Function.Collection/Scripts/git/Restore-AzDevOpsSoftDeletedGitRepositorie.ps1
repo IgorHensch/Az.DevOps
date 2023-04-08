@@ -8,31 +8,31 @@ function Restore-AzDevOpsSoftDeletedGitRepositorie {
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = 'Pipeline')]
         [PSCustomObject]$PipelineObject
     )
-
-    switch ($PSCmdlet.ParameterSetName) {
-        'General' {
-            $param = @{
-                Project      = $Project
-                RepositoryId = $RepositoryId
+    process {
+        switch ($PSCmdlet.ParameterSetName) {
+            'General' {
+                $param = @{
+                    Project      = $Project
+                    RepositoryId = $RepositoryId
+                }
+            }
+            'Pipeline' {
+                $param = @{
+                    Project      = $PipelineObject.project.name
+                    RepositoryId = $PipelineObject.id
+                }
             }
         }
-        'Pipeline' {
-            $param = @{
-                Project      = $PipelineObject.project.name
-                RepositoryId = $PipelineObject.id
-            }
+        $softDeletedGitRepositoriesUri = "https://$($script:sharedData.CoreServer)/$($script:sharedData.Organization)/$($param.Project)/_apis/git/recycleBin/repositories/$($param.RepositoryId)`?api-version=$($script:sharedData.ApiVersionPreview)"
+        $bodyData = @{
+            deleted = 'false'
         }
-    }
-
-    $SoftDeletedGitRepositoriesUri = "https://$($script:sharedData.CoreServer)/$($script:sharedData.Organization)/$($param.Project)/_apis/git/recycleBin/repositories/$($param.RepositoryId)`?api-version=$($script:sharedData.ApiVersionPreview)"
-    $bodyData = @{
-        deleted = 'false'
-    }
-    $Body = $bodyData | ConvertTo-Json
-    try {
-        Invoke-RestMethod -Uri $SoftDeletedGitRepositoriesUri -Body $Body -Method Patch -Headers $script:sharedData.Header -ContentType 'application/json'
-    }
-    catch {
-        throw $_
+        $body = $bodyData | ConvertTo-Json
+        try {
+            Invoke-RestMethod -Uri $softDeletedGitRepositoriesUri -Body $body -Method Patch -Headers $script:sharedData.Header -ContentType 'application/json'
+        }
+        catch {
+            throw $_
+        }
     }
 }

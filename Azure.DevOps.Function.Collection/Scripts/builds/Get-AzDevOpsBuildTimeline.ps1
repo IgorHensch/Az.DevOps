@@ -1,9 +1,10 @@
-function Get-AzDevOpsFeedPackageChanges {
+function Get-AzDevOpsBuildTimeline {
     [CmdletBinding(DefaultParameterSetName = 'General')]
     param (
         [Parameter(Mandatory = $true, ParameterSetName = 'General')]
-        [string]$FeedName,
-        [string]$Name = '*',
+        [string]$Project,
+        [Parameter(Mandatory = $true, ParameterSetName = 'General')]
+        [string]$BuildId,
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = 'Pipeline')]
         [PSCustomObject]$PipelineObject
     )
@@ -11,18 +12,18 @@ function Get-AzDevOpsFeedPackageChanges {
         switch ($PSCmdlet.ParameterSetName) {
             'General' {
                 $param = @{
-                    FeedUrl = (Get-AzDevOpsArtifactFeeds -Name $FeedName).url
+                    BuildUrl = (Get-AzDevOpsBuilds -Project $Project -Id $BuildId).url
                 }
             }
             'Pipeline' {
                 $param = @{
-                    FeedUrl = $PipelineObject.url
+                    BuildUrl = $PipelineObject.url
                 }
             }
         }
-        $feedPackageChangessUri = "$($param.FeedUrl)/packagechanges?api-version=$($script:sharedData.ApiVersionPreview)"
+        $buildUri = "$($param.BuildUrl)/Timeline?api-version=$($script:sharedData.ApiVersion)"
         try {
-            Write-Output -InputObject  (Invoke-RestMethod -Uri $feedPackageChangessUri -Method Get -Headers $script:sharedData.Header).packageChanges.package | Where-Object { $_.name -imatch "^$Name$" }
+            Write-Output -InputObject  (Invoke-RestMethod -Uri $buildUri -Method Get -Headers $script:sharedData.Header)
         }
         catch {
             throw $_

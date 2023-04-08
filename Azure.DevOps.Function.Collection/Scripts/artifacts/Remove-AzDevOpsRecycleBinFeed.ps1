@@ -7,44 +7,44 @@ function Remove-AzDevOpsRecycleBinFeed {
         [PSCustomObject]$PipelineObject,
         [switch]$Force
     )
-
-    switch ($PSCmdlet.ParameterSetName) {
-        'General' {
-            $param = @{
-                FeedName = $FeedName
+    process {
+        switch ($PSCmdlet.ParameterSetName) {
+            'General' {
+                $param = @{
+                    FeedName = $FeedName
+                }
+            }
+            'Pipeline' {
+                $param = @{
+                    FeedName = $PipelineObject.name
+                }
             }
         }
-        'Pipeline' {
-            $param = @{
-                FeedName = $PipelineObject.name
-            }
-        }
-    }
-
-    $Feed = Get-AzDevOpsRecycleBinFeeds -Name $param.FeedName
-    $RecycleBinFeedsUri = "https://feeds.$($script:sharedData.CoreServer)/$($script:sharedData.Organization)/_apis/packaging/feedrecyclebin/$($Feed.id)?api-version=$($script:sharedData.ApiVersionPreview)"
-    try {
-        if ($Force) {
-            Invoke-RestMethod -Uri $RecycleBinFeedsUri -Method Delete -Headers $script:sharedData.Header
-            Write-Host "Feed $($Feed.name) has been deleted from recycle bin."
-        }
-        else {
-            $Feed
-            $title = "Delete $($Feed.name) Feed from recycle bin."
-            $question = 'Do you want to continue?'
-            $choices = '&Yes', '&No'
-            
-            $decision = $Host.UI.PromptForChoice($title, $question, $choices, 1)
-            if ($decision -eq 0) {
-                Invoke-RestMethod -Uri $RecycleBinFeedsUri -Method Delete -Headers $script:sharedData.Header
-                Write-Host "Feed $($Feed.name) has been deleted from recycle bin."
+        $feed = Get-AzDevOpsRecycleBinFeeds -Name $param.FeedName
+        $recycleBinFeedsUri = "https://feeds.$($script:sharedData.CoreServer)/$($script:sharedData.Organization)/_apis/packaging/feedrecyclebin/$($Feed.id)?api-version=$($script:sharedData.ApiVersionPreview)"
+        try {
+            if ($Force) {
+                Invoke-RestMethod -Uri $recycleBinFeedsUri -Method Delete -Headers $script:sharedData.Header
+                Write-Host "Feed $($feed.name) has been deleted from recycle bin."
             }
             else {
-                Write-Host 'Canceled!'
+                $feed
+                $title = "Delete $($feed.name) Feed from recycle bin."
+                $question = 'Do you want to continue?'
+                $choices = '&Yes', '&No'
+            
+                $decision = $Host.UI.PromptForChoice($title, $question, $choices, 1)
+                if ($decision -eq 0) {
+                    Invoke-RestMethod -Uri $recycleBinFeedsUri -Method Delete -Headers $script:sharedData.Header
+                    Write-Host "Feed $($feed.name) has been deleted from recycle bin."
+                }
+                else {
+                    Write-Host 'Canceled!'
+                }
             }
         }
-    }
-    catch {
-        throw $_
+        catch {
+            throw $_
+        }
     }
 }

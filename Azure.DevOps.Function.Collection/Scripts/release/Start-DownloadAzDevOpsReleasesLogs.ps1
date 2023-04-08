@@ -9,24 +9,25 @@ function Start-DownloadAzDevOpsReleasesLogs {
         [Parameter(Mandatory = $true, ParameterSetName = 'General')]
         [string]$DownloadPath
     )
-
-    switch ($PSCmdlet.ParameterSetName) {
-        'General' {
-            $param = @{
-                ReleaseUrl = $ReleaseUrl
+    process {
+        switch ($PSCmdlet.ParameterSetName) {
+            'General' {
+                $param = @{
+                    ReleaseUrl = $ReleaseUrl
+                }
+            }
+            'Pipeline' {
+                $param = @{
+                    ReleaseUrl = $PipelineObject.url
+                }
             }
         }
-        'Pipeline' {
-            $param = @{
-                ReleaseUrl = $PipelineObject.url
-            }
+        try {
+            $releaseUri = "$($param.ReleaseUrl)/logs?api-version=$($script:sharedData.ApiVersionPreview)"
+            Invoke-RestMethod -Uri $releaseUri -Method Get -Headers $script:sharedData.Header -ContentType 'application/zip' -OutFile "$DownloadPath/Release-$($param.ReleaseUrl.Split('/')[-1]).zip"
         }
-    }
-    try {
-        $ReleaseUri = "$($param.ReleaseUrl)/logs?api-version=$($script:sharedData.ApiVersionPreview)"
-        Invoke-RestMethod -Uri $ReleaseUri -Method Get -Headers $script:sharedData.Header -ContentType 'application/zip' -OutFile "$DownloadPath/Release-$($param.ReleaseUrl.Split('/')[-1]).zip"
-    }
-    catch {
-        throw $_
+        catch {
+            throw $_
+        }
     }
 }

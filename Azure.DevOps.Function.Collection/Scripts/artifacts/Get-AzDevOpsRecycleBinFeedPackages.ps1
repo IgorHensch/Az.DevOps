@@ -5,11 +5,10 @@ function Get-AzDevOpsRecycleBinFeedPackages {
         [string]$FeedName,
         [string]$Name = '*'
     )
-
-    $FeedUrl = (Get-AzDevOpsArtifactFeeds -Name $FeedName).url
-    $RecycleBinPackagesUri = "$FeedUrl/RecycleBin/Packages?api-version=$($script:sharedData.ApiVersionPreview)"
+    $feedUrl = (Get-AzDevOpsArtifactFeeds -Name $FeedName).url
+    $recycleBinPackagesUri = "$feedUrl/RecycleBin/Packages?api-version=$($script:sharedData.ApiVersionPreview)"
     try {
-        Write-Output -InputObject  (Invoke-RestMethod -Uri $RecycleBinPackagesUri -Method Get -Headers $script:sharedData.Header).value | Where-Object { $_.name -imatch "^$Name$" }
+        Write-Output -InputObject  (Invoke-RestMethod -Uri $recycleBinPackagesUri -Method Get -Headers $script:sharedData.Header).value | Where-Object { $_.name -imatch "^$Name$" }
     }
     catch {
         throw $_

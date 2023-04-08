@@ -3,32 +3,30 @@ function Get-AzDevOpsBuildChanges {
     param (
         [Parameter(Mandatory = $true, ParameterSetName = 'General')]
         [string]$Project,
-        [string]$Id = '*',
+        [Parameter(Mandatory = $true, ParameterSetName = 'General')]
+        [string]$Id,
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = 'Pipeline')]
         [PSCustomObject]$PipelineObject
     )
-
-    switch ($PSCmdlet.ParameterSetName) {
-        'General' {
-            $param = @{
-                Id      = $Id
-                Project = $Project
+    process {
+        switch ($PSCmdlet.ParameterSetName) {
+            'General' {
+                $param = @{
+                    BuildUrl = (Get-AzDevOpsBuilds -Project $Project -Id $Id).url
+                }
+            }
+            'Pipeline' {
+                $param = @{
+                    BuildUrl = $PipelineObject.url
+                }
             }
         }
-        'Pipeline' {
-            $param = @{
-                Id      = $PipelineObject.id
-                Project = $PipelineObject.project.name
-            }
+        $buildChangesUri = "$($param.BuildUrl)/changes?api-version=$($script:sharedData.ApiVersion)&includeSourceChange=true"
+        try {
+            Write-Output -InputObject  (Invoke-RestMethod -Uri $buildChangesUri -Method Get -Headers $script:sharedData.Header).value
         }
-    }
-
-    $BuildUrl = (Get-AzDevOpsBuilds -Project $param.Project -Id $param.Id).url
-    $BuildChangesUri = "$BuildUrl/changes?api-version=$($script:sharedData.ApiVersion)&includeSourceChange=true"
-    try {
-        Write-Output -InputObject  (Invoke-RestMethod -Uri $BuildChangesUri -Method Get -Headers $script:sharedData.Header).value | Where-Object { $_.name -imatch "^$Name$" }
-    }
-    catch {
-        throw $_
+        catch {
+            throw $_
+        }
     }
 }
