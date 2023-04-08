@@ -5,11 +5,10 @@ function Get-AzDevOpsFeedPermissions {
         [string]$FeedName,
         [string]$Name = '*'
     )
-
-    $FeedUrl = (Get-AzDevOpsArtifactFeeds -Name $FeedName).url
-    $FeedPermissionsUri = "$FeedUrl/permissions?api-version=$($script:sharedData.ApiVersionPreview)"
+    $feedUrl = (Get-AzDevOpsArtifactFeeds -Name $FeedName).url
+    $feedPermissionsUri = "$FeedUrl/permissions?api-version=$($script:sharedData.ApiVersionPreview)"
     try {
-        Write-Output -InputObject  (Invoke-RestMethod -Uri $FeedPermissionsUri -Method Get -Headers $script:sharedData.Header).value | Where-Object { $_.name -imatch "^$Name$" }
+        Write-Output -InputObject  (Invoke-RestMethod -Uri $feedPermissionsUri -Method Get -Headers $script:sharedData.Header).value | Where-Object { $_.name -imatch "^$Name$" }
     }
     catch {
         throw $_

@@ -8,8 +8,7 @@ function New-AzDevOpsProject {
         [string]$SourceControlType = 'Git',
         [string]$TemplateTypeId = '6b724908-ef14-45cf-84f8-768b5384da45'
     )
-
-    $ProjectUri = "https://$($script:sharedData.CoreServer)/$($script:sharedData.Organization)/_apis/projects?api-version=$($script:sharedData.ApiVersion)"
+    $projectUri = "https://$($script:sharedData.CoreServer)/$($script:sharedData.Organization)/_apis/projects?api-version=$($script:sharedData.ApiVersion)"
     $bodyData = @{
         name         = $Name
         description  = $Description
@@ -23,9 +22,9 @@ function New-AzDevOpsProject {
             }
         }
     }
-    $Body = $bodyData | ConvertTo-Json
+    $body = $bodyData | ConvertTo-Json
     try {
-        Invoke-RestMethod -Uri $ProjectUri -Body $Body -Method Post -Headers $script:sharedData.Header -ContentType 'application/json'
+        Invoke-RestMethod -Uri $projectUri -Body $body -Method Post -Headers $script:sharedData.Header -ContentType 'application/json'
     }
     catch {
         throw $_

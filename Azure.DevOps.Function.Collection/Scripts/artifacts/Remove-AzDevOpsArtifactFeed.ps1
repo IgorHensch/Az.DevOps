@@ -7,44 +7,44 @@ function Remove-AzDevOpsArtifactFeed {
         [PSCustomObject]$PipelineObject,
         [switch]$Force
     )
-
-    switch ($PSCmdlet.ParameterSetName) {
-        'General' {
-            $param = @{
-                FeedName = $FeedName
+    process {
+        switch ($PSCmdlet.ParameterSetName) {
+            'General' {
+                $param = @{
+                    FeedName = $FeedName
+                }
+            }
+            'Pipeline' {
+                $param = @{
+                    FeedName = $PipelineObject.name
+                }
             }
         }
-        'Pipeline' {
-            $param = @{
-                FeedName = $PipelineObject.name
-            }
-        }
-    }
-
-    $Feed = Get-AzDevOpsArtifactFeeds -Name $param.FeedName
-    $ArtifactFeedsUri = "$($Feed.url)`?api-version=$($script:sharedData.ApiVersionPreview)"
-    try {
-        if ($Force) {
-            Invoke-RestMethod -Uri $ArtifactFeedsUri -Method Delete -Headers $script:sharedData.Header
-            Write-Host "Feed $($Feed.name) has been deleted."
-        }
-        else {
-            $Feed
-            $title = "Delete $($Feed.name) Feed."
-            $question = 'Do you want to continue?'
-            $choices = '&Yes', '&No'
-            
-            $decision = $Host.UI.PromptForChoice($title, $question, $choices, 1)
-            if ($decision -eq 0) {
-                Invoke-RestMethod -Uri $ArtifactFeedsUri -Method Delete -Headers $script:sharedData.Header
-                Write-Host "Feed $($Feed.name) has been deleted."
+        $feed = Get-AzDevOpsArtifactFeeds -Name $param.FeedName
+        $artifactFeedsUri = "$($Feed.url)`?api-version=$($script:sharedData.ApiVersionPreview)"
+        try {
+            if ($Force) {
+                Invoke-RestMethod -Uri $artifactFeedsUri -Method Delete -Headers $script:sharedData.Header
+                Write-Host "Feed $($feed.name) has been deleted."
             }
             else {
-                Write-Host 'Canceled!'
+                $feed
+                $title = "Delete $($feed.name) Feed."
+                $question = 'Do you want to continue?'
+                $choices = '&Yes', '&No'
+                
+                $decision = $Host.UI.PromptForChoice($title, $question, $choices, 1)
+                if ($decision -eq 0) {
+                    Invoke-RestMethod -Uri $artifactFeedsUri -Method Delete -Headers $script:sharedData.Header
+                    Write-Host "Feed $($feed.name) has been deleted."
+                }
+                else {
+                    Write-Host 'Canceled!'
+                }
             }
         }
-    }
-    catch {
-        throw $_
+        catch {
+            throw $_
+        }
     }
 }

@@ -6,8 +6,8 @@ function Connect-AzDevOps {
         [Parameter(Mandatory = $true)]
         [string]$Organization,
         [string]$ApiVersion = '7.0',
-        [string]$ApiVersionPreview = '7.1-preview.1',
-        [string]$ApiVersion1Preview2 = '7.1-preview.2',
+        [string]$ApiVersionPreview = '7.0-preview.1',
+        [string]$ApiVersion1Preview2 = '7.0-preview.2',
         [string]$CoreServer = 'dev.azure.com'
     )
 
@@ -20,9 +20,9 @@ function Connect-AzDevOps {
         ApiVersionPreview2 = $ApiVersionPreview2
         CoreServer         = $CoreServer
     }
-    $ProfileUri = "https://vssps.$($script:sharedData.CoreServer)/$($script:sharedData.Organization)/_apis/profile/profiles/me?api-version=$($script:sharedData.ApiVersionPreview)"
+    $profileUri = "https://vssps.$($script:sharedData.CoreServer)/$($script:sharedData.Organization)/_apis/profile/profiles/me?api-version=$($script:sharedData.ApiVersionPreview)"
     try {
-        Invoke-RestMethod -Method Get -Uri $ProfileUri -Headers $script:sharedData.Header
+        Invoke-RestMethod -Method Get -Uri $profileUri -Headers $script:sharedData.Header
     }
     catch {
         throw $_

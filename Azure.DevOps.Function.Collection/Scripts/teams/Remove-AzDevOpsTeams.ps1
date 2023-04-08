@@ -7,44 +7,44 @@ function Remove-AzDevOpsTeams {
         [PSCustomObject]$PipelineObject,
         [switch]$Force
     )
-
-    switch ($PSCmdlet.ParameterSetName) {
-        'General' {
-            $param = @{
-                TeamName = $TeamName
+    process {
+        switch ($PSCmdlet.ParameterSetName) {
+            'General' {
+                $param = @{
+                    TeamName = $TeamName
+                }
+            }
+            'Pipeline' {
+                $param = @{
+                    TeamName = $PipelineObject.name
+                }
             }
         }
-        'Pipeline' {
-            $param = @{
-                TeamName = $PipelineObject.name
-            }
-        }
-    }
-
-    $Team = Get-AzDevOpsTeams -Name $param.TeamName
-    $TeamUri = "$($Team.url)?api-version=$($script:sharedData.ApiVersionPreview)"
-    try {
-        if ($Force) {
-            Invoke-RestMethod -Uri $TeamUri -Method Delete -Headers $script:sharedData.Header
-            Write-Host "Team $($Team.name) has been deleted."
-        }
-        else {
-            $Team
-            $title = "Delete $($Team.name) Feed from recycle bin."
-            $question = 'Do you want to continue?'
-            $choices = '&Yes', '&No'
-            
-            $decision = $Host.UI.PromptForChoice($title, $question, $choices, 1)
-            if ($decision -eq 0) {
-                Invoke-RestMethod -Uri $TeamUri -Method Delete -Headers $script:sharedData.Header
-                Write-Host "Team $($Team.name) has been deleted."
+        $team = Get-AzDevOpsTeams -Name $param.TeamName
+        $teamUri = "$($team.url)?api-version=$($script:sharedData.ApiVersionPreview)"
+        try {
+            if ($Force) {
+                Invoke-RestMethod -Uri $teamUri -Method Delete -Headers $script:sharedData.Header
+                Write-Host "Team $($team.name) has been deleted."
             }
             else {
-                Write-Host 'Canceled!'
+                $team
+                $title = "Delete $($team.name) Feed from recycle bin."
+                $question = 'Do you want to continue?'
+                $choices = '&Yes', '&No'
+                
+                $decision = $Host.UI.PromptForChoice($title, $question, $choices, 1)
+                if ($decision -eq 0) {
+                    Invoke-RestMethod -Uri $teamUri -Method Delete -Headers $script:sharedData.Header
+                    Write-Host "Team $($team.name) has been deleted."
+                }
+                else {
+                    Write-Host 'Canceled!'
+                }
             }
         }
-    }
-    catch {
-        throw $_
+        catch {
+            throw $_
+        }
     }
 }

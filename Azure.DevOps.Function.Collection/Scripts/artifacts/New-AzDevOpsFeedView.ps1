@@ -8,17 +8,16 @@ function New-AzDevOpsFeedView {
         [string]$Visibility = "collection",
         [string]$Type = "release"
     )
-
-    $FeedUrl = (Get-AzDevOpsArtifactFeeds -Name $FeedName).url
-    $FeedViewsUri = "$FeedUrl/views?api-version=$($script:sharedData.ApiVersionPreview)"
+    $feedUrl = (Get-AzDevOpsArtifactFeeds -Name $FeedName).url
+    $feedViewsUri = "$FeedUrl/views?api-version=$($script:sharedData.ApiVersionPreview)"
     $bodyData = @{
         visibility = $Visibility
         name       = $Name
         type       = $Type
     }
-    $Body = $bodyData | ConvertTo-Json
+    $body = $bodyData | ConvertTo-Json
     try {
-        Invoke-RestMethod -Uri $FeedViewsUri -Body $Body -Method Post -Headers $script:sharedData.Header -ContentType 'application/json'
+        Invoke-RestMethod -Uri $feedViewsUri -Body $body -Method Post -Headers $script:sharedData.Header -ContentType 'application/json'
     }
     catch {
         throw $_

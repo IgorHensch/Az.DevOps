@@ -7,26 +7,25 @@ function Get-AzDevOpsFeedPackages {
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = 'Pipeline')]
         [PSCustomObject]$PipelineObject
     )
-
-    switch ($PSCmdlet.ParameterSetName) {
-        'General' {
-            $param = @{
-                FeedName = $FeedName
+    process {
+        switch ($PSCmdlet.ParameterSetName) {
+            'General' {
+                $param = @{
+                    FeedUrl = (Get-AzDevOpsArtifactFeeds -Name $FeedName).url
+                }
+            }
+            'Pipeline' {
+                $param = @{
+                    FeedUrl = $PipelineObject.url
+                }
             }
         }
-        'Pipeline' {
-            $param = @{
-                FeedName = $PipelineObject.name
-            }
+        $artifactFeedsUri = "$($param.FeedUrl)/packages?api-version=$($script:sharedData.ApiVersionPreview)"
+        try {
+            Write-Output -InputObject  (Invoke-RestMethod -Uri $artifactFeedsUri -Method Get -Headers $script:sharedData.Header).value | Where-Object { $_.name -imatch "^$Name$" }
         }
-    }
-
-    $FeedUrl = (Get-AzDevOpsArtifactFeeds -Name $param.FeedName).url
-    $ArtifactFeedsUri = "$FeedUrl/packages?api-version=$($script:sharedData.ApiVersionPreview)"
-    try {
-        Write-Output -InputObject  (Invoke-RestMethod -Uri $ArtifactFeedsUri -Method Get -Headers $script:sharedData.Header).value | Where-Object { $_.name -imatch "^$Name$" }
-    }
-    catch {
-        throw $_
+        catch {
+            throw $_
+        }
     }
 }

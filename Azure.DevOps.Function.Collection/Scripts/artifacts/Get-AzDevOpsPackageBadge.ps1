@@ -9,25 +9,25 @@ function Get-AzDevOpsPackageBadge {
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = 'Pipeline')]
         [PSCustomObject]$PipelineObject
     )
-
-    switch ($PSCmdlet.ParameterSetName) {
-        'General' {
-            $param = @{
-                PackageUrl = (Get-AzDevOpsFeedPackages -FeedName $FeedName -Name $PackageName).url
+    process {
+        switch ($PSCmdlet.ParameterSetName) {
+            'General' {
+                $param = @{
+                    PackageUrl = (Get-AzDevOpsFeedPackages -FeedName $FeedName -Name $PackageName).url
+                }
+            }
+            'Pipeline' {
+                $param = @{
+                    PackageUrl = $PipelineObject.url
+                }
             }
         }
-        'Pipeline' {
-            $param = @{
-                PackageUrl = $PipelineObject.url
-            }
+        $packageBadgeUri = "$($param.PackageUrl)/badge?api-version=$($script:sharedData.ApiVersionPreview)"
+        try {
+            Write-Output -InputObject  (Invoke-RestMethod -ContentType 'image/svg+xml' -Uri $packageBadgeUri -Method Get -Headers $script:sharedData.Header).value | Where-Object { $_.name -imatch "^$Name$" }
         }
-    }
-
-    $PackageBadgeUri = "$($param.PackageUrl)/badge?api-version=$($script:sharedData.ApiVersionPreview)"
-    try {
-        Write-Output -InputObject  (Invoke-RestMethod -ContentType 'image/svg+xml' -Uri $PackageBadgeUri -Method Get -Headers $script:sharedData.Header).value | Where-Object { $_.name -imatch "^$Name$" }
-    }
-    catch {
-        throw $_
+        catch {
+            throw $_
+        }
     }
 }

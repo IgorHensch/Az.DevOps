@@ -26,8 +26,7 @@ function New-AzDevOpsArtifactFeed {
             }
         }
     )
-
-    $ArtifactFeedsUri = "https://feeds.$($script:sharedData.CoreServer)/$($script:sharedData.Organization)/$Project/_apis/packaging/feeds?api-version=$($script:sharedData.ApiVersionPreview)"
+    $artifactFeedsUri = "https://feeds.$($script:sharedData.CoreServer)/$($script:sharedData.Organization)/$Project/_apis/packaging/feeds?api-version=$($script:sharedData.ApiVersionPreview)"
     $bodyData = @{
         description                = $Description
         hideDeletedPackageVersions = $HideDeletedPackageVersions
@@ -38,9 +37,9 @@ function New-AzDevOpsArtifactFeed {
         upstreamSources            = $UpstreamSources
         capabilities               = $Capabilities
     }
-    $Body = $bodyData | ConvertTo-Json
+    $body = $bodyData | ConvertTo-Json
     try {
-        Invoke-RestMethod -Uri $ArtifactFeedsUri -Body $Body -Method Post -Headers $script:sharedData.Header -ContentType 'application/json'
+        Invoke-RestMethod -Uri $ArtifactFeedsUri -Body $body -Method Post -Headers $script:sharedData.Header -ContentType 'application/json'
     }
     catch {
         throw $_

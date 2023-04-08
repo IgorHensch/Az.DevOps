@@ -26,7 +26,6 @@ function Update-AzDevOpsVariableGroup {
             ErrorMessage = 'The JSON has incorrect schema.')]
         $VariableCollectionJSON
     )
-    
     switch ($PSCmdlet.ParameterSetName) {
         'General' {
             $bodyData = @{
@@ -49,12 +48,11 @@ function Update-AzDevOpsVariableGroup {
             }
         }
     }
-
     $variableGroup = Get-AzDevOpsVariableGroups -Project $Project -Name $Name
-    $VariablegroupsUri = "https://$($script:sharedData.CoreServer)/$($script:sharedData.Organization)/$Project/_apis/distributedtask/variablegroups/$($variableGroup.id)?api-version=$($script:sharedData.ApiVersionPreview)"
-    $Body = $bodyData | ConvertTo-Json -Depth 10
+    $variableGroupsUri = "https://$($script:sharedData.CoreServer)/$($script:sharedData.Organization)/$Project/_apis/distributedtask/variablegroups/$($variableGroup.id)?api-version=$($script:sharedData.ApiVersionPreview)"
+    $body = $bodyData | ConvertTo-Json -Depth 10
     try {
-        Invoke-RestMethod -Uri $VariablegroupsUri -Body $Body -Method Put -Headers $script:sharedData.Header -ContentType 'application/json'
+        Invoke-RestMethod -Uri $variableGroupsUri -Body $body -Method Put -Headers $script:sharedData.Header -ContentType 'application/json'
     }
     catch {
         throw $_
