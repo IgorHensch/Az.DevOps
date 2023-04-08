@@ -1,0 +1,54 @@
+function Remove-AzDevOpsVariableGroup {
+    [CmdletBinding(DefaultParameterSetName = 'General')]
+    param (
+        [Parameter(Mandatory = $true, ParameterSetName = 'General')]  
+        [string]$Project,
+        [Parameter(Mandatory = $true, ParameterSetName = 'General')]
+        [string]$Name,
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = 'Pipeline', ValueFromRemainingArguments)]
+        $PipelineObject,
+        [switch]$Force
+    )
+    process {
+        switch ($PSCmdlet.ParameterSetName) {
+            'General' {
+                $param = @{
+                    Project         = $Project
+                    VariableGroupId = $Name
+                }
+            }
+            'Pipeline' {
+                $param = @{
+                    Project = $PipelineObject.project
+                    Name    = $PipelineObject.name
+                }
+            }
+        }
+        $variableGroup = Get-AzDevOpsVariableGroups -Project $param.Project -Name $param.Name
+        $variableGroupsUri = "https://$($script:sharedData.CoreServer)/$($script:sharedData.Organization)/$($param.Project)/_apis/distributedtask/variablegroups/$($variableGroup.id)?api-version=$($script:sharedData.ApiVersionPreview)"
+        try {
+            if ($Force) {
+                Invoke-RestMethod -Uri $variableGroupsUri -Method Delete -Headers $script:sharedData.Header
+                Write-Host "Variable group $($variableGroup.name) has been deleted."
+            }
+            else {
+                $variableGroup
+                $title = "Delete $($variableGroup.name) variable group."
+                $question = 'Do you want to continue?'
+                $choices = '&Yes', '&No'
+            
+                $decision = $Host.UI.PromptForChoice($title, $question, $choices, 1)
+                if ($decision -eq 0) {
+                    Invoke-RestMethod -Uri $variableGroupsUri -Method Delete -Headers $script:sharedData.Header
+                    Write-Host "Variable group $($variableGroup.name) has been deleted."
+                }
+                else {
+                    Write-Host 'Canceled!'
+                }
+            }
+        }
+        catch {
+            throw $_
+        }
+    }
+}

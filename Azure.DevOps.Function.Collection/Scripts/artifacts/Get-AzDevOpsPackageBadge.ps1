@@ -1,10 +1,11 @@
-function Approve-AzDevOpsReleases {
+function Get-AzDevOpsPackageBadge {
     [CmdletBinding(DefaultParameterSetName = 'General')]
     param (
         [Parameter(Mandatory = $true, ParameterSetName = 'General')]
-        [array]$ApprovalId,
+        [string]$FeedName,
         [Parameter(Mandatory = $true, ParameterSetName = 'General')]
-        [string]$Project,
+        [string]$PackageName,
+        [string]$Name = '*',
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = 'Pipeline')]
         [PSCustomObject]$PipelineObject
     )
@@ -12,22 +13,18 @@ function Approve-AzDevOpsReleases {
         switch ($PSCmdlet.ParameterSetName) {
             'General' {
                 $param = @{
-                    ApprovalUrl = (Get-AzDevOpsApprovals -Project $Project -Id $ApprovalId).url
+                    PackageUrl = (Get-AzDevOpsFeedPackages -FeedName $FeedName -Name $PackageName).url
                 }
             }
             'Pipeline' {
                 $param = @{
-                    ApprovalUrl = PipelineObject.url
+                    PackageUrl = $PipelineObject.url
                 }
             }
         }
-        $approvalsUri = "$($param.ApprovalUrl)?api-version=$($script:sharedData.ApiVersionPreview)"
-        $bodyData = @{
-            status = "approved"
-        }
-        $body = $bodyData | ConvertTo-Json
+        $packageBadgeUri = "$($param.PackageUrl)/badge?api-version=$($script:sharedData.ApiVersionPreview)"
         try {
-            Invoke-RestMethod -Uri $approvalsUri -Method Patch -Body $body -Headers $script:sharedData.Header -ContentType 'application/json'
+            Write-Output -InputObject  (Invoke-RestMethod -ContentType 'image/svg+xml' -Uri $packageBadgeUri -Method Get -Headers $script:sharedData.Header).value | Where-Object { $_.name -imatch "^$Name$" }
         }
         catch {
             throw $_

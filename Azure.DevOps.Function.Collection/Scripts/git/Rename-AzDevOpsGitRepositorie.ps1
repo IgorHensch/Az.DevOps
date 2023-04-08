@@ -4,39 +4,40 @@ function Rename-AzDevOpsGitRepositorie {
         [Parameter(Mandatory = $true, ParameterSetName = 'General')]  
         [string]$Project,
         [Parameter(Mandatory = $true, ParameterSetName = 'General')]
-        [string]$RepositoryId,
+        [string]$Name,
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = 'Pipeline')]
         [PSCustomObject]$PipelineObject,
         [Parameter(ParameterSetName = 'General')]
         [Parameter(Mandatory = $true, ParameterSetName = 'Pipeline')]
         [string]$NewName
     )
-
-    switch ($PSCmdlet.ParameterSetName) {
-        'General' {
-            $param = @{
-                Project      = $Project
-                RepositoryId = $RepositoryId
+    process {
+        switch ($PSCmdlet.ParameterSetName) {
+            'General' {
+                $param = @{
+                    Project = $Project
+                    Name    = $Name
+                }
+            }
+            'Pipeline' {
+                $param = @{
+                    Project = $PipelineObject.project.name
+                    Name    = $PipelineObject.name
+                }
             }
         }
-        'Pipeline' {
-            $param = @{
-                Project      = $PipelineObject.project.name
-                RepositoryId = $PipelineObject.id
-            }
+        $gitRepositorie = Get-AzDevOpsGitRepositorie -Project $param.Project -Name $param.Name
+        $gitRepositoriesUri = "$($gitRepositorie.url)?api-version=$($script:sharedData.ApiVersionPreview)"
+        $bodyData = @{
+            name = $NewName
         }
-    }
-
-    $GitRepositoriesUri = "https://$($script:sharedData.CoreServer)/$($script:sharedData.Organization)/$($param.Project)/_apis/git/repositories/$($param.RepositoryId)`?api-version=$($script:sharedData.ApiVersion)"
-    $bodyData = @{
-        name = $NewName
-    }
-    $Body = $bodyData | ConvertTo-Json
-    try {
-        $Body 
-        Invoke-RestMethod -Uri $GitRepositoriesUri -Body $Body -Method Patch -Headers $script:sharedData.Header -ContentType 'application/json'
-    }
-    catch {
-        throw $_
+        $body = $bodyData | ConvertTo-Json
+        try {
+            $body 
+            Invoke-RestMethod -Uri $gitRepositoriesUri -Body $body -Method Patch -Headers $script:sharedData.Header -ContentType 'application/json'
+        }
+        catch {
+            throw $_
+        }
     }
 }
