@@ -1,4 +1,19 @@
 function Remove-AzDevOpsRecycleBinFeed {
+    <#
+    .SYNOPSIS
+        Removes Azure DevOps Artifact deleted Feeds 
+    .DESCRIPTION
+        Removes deleted Feeds from Azure Devops Artifact Recycle Bin.
+    .LINK
+        Get-AzDevOpsRecycleBinFeeds
+    .EXAMPLE
+        Remove-AzDevOpsRecycleBinFeed -FeedName 'FeedName'
+    .EXAMPLE
+        Remove-AzDevOpsRecycleBinFeed -FeedName 'FeedName' -Force
+    .EXAMPLE
+        Get-AzDevOpsRecycleBinFeeds -Name 'FeedName' | Remove-AzDevOpsRecycleBinFeed
+    #>
+
     [CmdletBinding(DefaultParameterSetName = 'General')]
     param (
         [Parameter(Mandatory = $true, ParameterSetName = 'General')]  

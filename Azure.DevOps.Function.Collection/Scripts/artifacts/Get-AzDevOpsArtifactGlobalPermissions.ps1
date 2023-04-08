@@ -1,4 +1,15 @@
 function Get-AzDevOpsArtifactGlobalPermissions {
+    <#
+    .SYNOPSIS
+        Gets Azure DevOps Global Permissions
+    .DESCRIPTION
+        Gets Global Permissions from Azure Devops Artifact.
+    .EXAMPLE
+        Get-AzDevOpsArtifactGlobalPermissions
+    .EXAMPLE
+        Get-AzDevOpsArtifactGlobalPermissions -Role 'administrator'
+    #>
+    
     [CmdletBinding()]
     param (
         [string]$Role = '*'

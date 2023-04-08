@@ -1,4 +1,19 @@
 function Remove-AzDevOpsArtifactFeed {
+    <#
+    .SYNOPSIS
+        Removes Azure DevOps Artifact Feeds 
+    .DESCRIPTION
+        Removes Feeds from Azure Devops Artifact.
+    .LINK
+        Get-AzDevOpsArtifactFeeds
+    .EXAMPLE
+        Remove-AzDevOpsArtifactFeed -FeedName 'FeedName'
+    .EXAMPLE
+        Remove-AzDevOpsArtifactFeed -FeedName 'FeedName' -Force
+    .EXAMPLE
+        Get-AzDevOpsArtifactFeeds -Project 'ProjectName' -Name 'FeedName' | Remove-AzDevOpsArtifactFeed
+    #>
+
     [CmdletBinding(DefaultParameterSetName = 'General')]
     param (
         [Parameter(Mandatory = $true, ParameterSetName = 'General')]  

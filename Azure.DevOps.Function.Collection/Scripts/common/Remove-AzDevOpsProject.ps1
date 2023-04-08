@@ -20,7 +20,7 @@ function Remove-AzDevOpsProject {
                 }
             }
         }
-        $project = Get-AzDevOpsProject -Name $param.Name
+        $project = Get-AzDevOpsProjects -Name $param.Name
         $projectUri = "$($project.url)?api-version=$($script:sharedData.ApiVersion)"
         try {
             if ($Force) {

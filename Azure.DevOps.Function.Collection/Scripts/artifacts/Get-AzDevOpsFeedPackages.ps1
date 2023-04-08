@@ -1,4 +1,21 @@
 function Get-AzDevOpsFeedPackages {
+    <#
+    .SYNOPSIS
+        Gets Azure DevOps Feed Packages 
+    .DESCRIPTION
+        Gets Feed Packages from Azure Devops Artifact.
+    .LINK
+        Get-AzDevOpsArtifactFeeds
+    .EXAMPLE
+        Get-AzDevOpsFeedPackages -FeedName 'FeedName'
+    .EXAMPLE
+        Get-AzDevOpsFeedPackages -FeedName 'FeedName' -Name 'PackageName'
+    .EXAMPLE
+        Get-AzDevOpsArtifactFeeds | Get-AzDevOpsFeedPackages
+    .EXAMPLE
+        Get-AzDevOpsArtifactFeeds -Name 'FeedName' | Get-AzDevOpsFeedPackages
+    #>
+
     [CmdletBinding(DefaultParameterSetName = 'General')]
     param (
         [Parameter(Mandatory = $true, ParameterSetName = 'General')]

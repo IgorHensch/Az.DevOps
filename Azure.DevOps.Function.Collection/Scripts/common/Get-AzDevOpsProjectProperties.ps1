@@ -10,7 +10,7 @@ function Get-AzDevOpsProjectProperties {
         switch ($PSCmdlet.ParameterSetName) {
             'General' {
                 $param = @{
-                    ProjectPropertieUrl = (Get-AzDevOpsProject -Name $Project).url
+                    ProjectPropertieUrl = (Get-AzDevOpsProjects -Name $Project).url
                 }
             }
             'Pipeline' {
