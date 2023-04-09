@@ -1,4 +1,15 @@
 function Get-AzDevOpsBuilds {
+    <#
+    .SYNOPSIS
+        Gets Azure DevOps Builds.
+    .DESCRIPTION
+        Gets Builds in Azure Devops Pipelines.
+    .EXAMPLE
+        Get-AzDevOpsBuilds -Project 'ProjectName'
+    .EXAMPLE
+        Get-AzDevOpsBuilds -Project 'ProjectName' -Id 'BuildId'
+    #>
+
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true)]

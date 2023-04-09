@@ -1,4 +1,14 @@
 function Get-AzDevOpsSoftDeletedGitRepositories {
+    <#
+    .SYNOPSIS
+        Gets Azure DevOps soft deleted Git Repositories.
+    .DESCRIPTION
+        Gets soft deleted Git Repositories from Azure Devops Repos.
+    .EXAMPLE
+        Get-AzDevOpsSoftDeletedGitRepositories -Project 'ProjectName'
+    .EXAMPLE
+        Get-AzDevOpsSoftDeletedGitRepositories -Project 'ProjectName' -Name 'RepositorieName'
+    #>
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true)]

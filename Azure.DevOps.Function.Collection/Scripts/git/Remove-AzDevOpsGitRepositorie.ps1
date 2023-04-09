@@ -1,4 +1,19 @@
 function Remove-AzDevOpsGitRepositorie {
+    <#
+    .SYNOPSIS
+        Removes Azure DevOps Git Repositorie.
+    .DESCRIPTION
+        Removes Git Repositorie in Azure Devops Repos.
+    .LINK
+        Get-AzDevOpsGitRepositories
+    .EXAMPLE
+        Remove-AzDevOpsGitRepositorie -Project 'ProjectName' -Name 'RepositorieName'
+    .EXAMPLE
+        Get-AzDevOpsGitRepositories -Project 'ProjectName' -Name 'RepositorieName' | Remove-AzDevOpsGitRepositorie
+    .EXAMPLE
+        Get-AzDevOpsGitRepositories -Project 'ProjectName' | Remove-AzDevOpsGitRepositorie
+    #>
+
     [CmdletBinding(DefaultParameterSetName = 'General')]
     param (
         [Parameter(Mandatory = $true, ParameterSetName = 'General')]  

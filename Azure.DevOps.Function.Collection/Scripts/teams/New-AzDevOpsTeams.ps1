@@ -1,4 +1,15 @@
 function New-AzDevOpsTeams {
+    <#
+    .SYNOPSIS
+        Creates Azure DevOps Team.
+    .DESCRIPTION
+        Creates Team in Azure Devops.
+    .EXAMPLE
+        New-AzDevOpsTeams -Name 'TeamName'
+    .EXAMPLE
+        New-AzDevOpsTeams -Name 'TeamName' -Description 'Description'
+    #>
+
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true)]

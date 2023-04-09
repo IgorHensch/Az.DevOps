@@ -1,4 +1,21 @@
 function Remove-AzDevOpsVariableGroup {
+    <#
+    .SYNOPSIS
+        Removes Azure DevOps Variable Group.
+    .DESCRIPTION
+        Removes Variable Group from Azure Devops Library.
+    .LINK
+        Get-AzDevOpsVariableGroups
+    .EXAMPLE
+        Remove-AzDevOpsVariableGroup -Project 'ProjectName' -Name 'VariableGroupName'
+    .EXAMPLE
+        Remove-AzDevOpsVariableGroup -Project 'ProjectName' -Name 'VariableGroupName' -Force
+    .EXAMPLE
+        Get-AzDevOpsVariableGroups -Project 'ProjectName' -Name 'VariableGroupName' | Remove-AzDevOpsVariableGroup
+    .EXAMPLE
+        Get-AzDevOpsVariableGroups -Project 'ProjectName' | Remove-AzDevOpsVariableGroup
+    #>
+
     [CmdletBinding(DefaultParameterSetName = 'General')]
     param (
         [Parameter(Mandatory = $true, ParameterSetName = 'General')]  

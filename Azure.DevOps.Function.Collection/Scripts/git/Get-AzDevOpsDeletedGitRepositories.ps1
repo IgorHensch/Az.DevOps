@@ -1,4 +1,15 @@
 function Get-AzDevOpsDeletedGitRepositories {
+    <#
+    .SYNOPSIS
+        Gets Azure DevOps deleted Git Repositories.
+    .DESCRIPTION
+        Gets deleted Git Repositories from Azure Devops Repos.
+    .EXAMPLE
+        Get-AzDevOpsDeletedGitRepositories -Project 'ProjectName'
+    .EXAMPLE
+        Get-AzDevOpsDeletedGitRepositories -Project 'ProjectName' -Name 'RepositorieName'
+    #>
+
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true)]

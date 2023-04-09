@@ -1,4 +1,19 @@
 function Approve-AzDevOpsBuild {
+    <#
+    .SYNOPSIS
+        Approves Azure DevOps Build Pipeline.
+    .DESCRIPTION
+        Approves Build in Azure Devops Pipelines.
+    .LINK
+        Get-AzDevOpsBuildApprovals
+    .EXAMPLE
+        Approve-AzDevOpsBuild -ApprovalId 'ApprovalId' -Project 'ProjectName'
+    .EXAMPLE
+        Approve-AzDevOpsBuild -ApprovalId 'ApprovalId' -Project 'ProjectName' -Comment 'Comment'
+    .EXAMPLE
+        Get-AzDevOpsBuildApprovals -Project 'ProjectName' -BuildNumber 'BuildNumber' | Approve-AzDevOpsBuild
+    #>
+
     [CmdletBinding(DefaultParameterSetName = 'General')]
     param (
         [Parameter(Mandatory = $true, ParameterSetName = 'General')]

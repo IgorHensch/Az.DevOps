@@ -1,4 +1,13 @@
 function New-AzDevOpsGitRepositorie {
+    <#
+    .SYNOPSIS
+        Creates new Azure DevOps Git Repositorie.
+    .DESCRIPTION
+        Creates new Git Repositorie in Azure Devops Repos.
+    .EXAMPLE
+        New-AzDevOpsGitRepositorie -Project 'ProjectName' -Name 'RepositorieName'
+    #>
+
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true)]

@@ -1,4 +1,19 @@
 function Get-AzDevOpsTeamMembers {
+    <#
+    .SYNOPSIS
+        Gets Azure DevOps Team Members.
+    .DESCRIPTION
+        Gets Members from Azure Devops Team.
+    .LINK
+        Get-AzDevOpsTeams
+    .EXAMPLE
+        Get-AzDevOpsTeamMembers -TeamName 'TeamName'
+    .EXAMPLE
+        Get-AzDevOpsTeamMembers -TeamName 'TeamName' -Name 'MemberName'
+    .EXAMPLE
+        Get-AzDevOpsTeams -Name 'TeamName' | Get-AzDevOpsTeamMembers
+    #>
+
     [CmdletBinding(DefaultParameterSetName = 'General')]
     param (
         [Parameter(Mandatory = $true, ParameterSetName = 'General')]

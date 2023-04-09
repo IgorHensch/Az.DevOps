@@ -1,4 +1,15 @@
 function Get-AzDevOpsVariableGroups {
+    <#
+    .SYNOPSIS
+        Gets Azure DevOps Variable Groups.
+    .DESCRIPTION
+        Gets Variable Groups from Azure Devops Library.
+    .EXAMPLE
+        Get-AzDevOpsVariableGroups -Project 'ProjectName'
+    .EXAMPLE
+        Get-AzDevOpsVariableGroups -Project 'ProjectName' -Name 'VariableGroupName'
+    #>
+
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true)]

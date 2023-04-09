@@ -1,4 +1,15 @@
 function Get-AzDevOpsGitRepositories {
+    <#
+    .SYNOPSIS
+        Gets Azure DevOps Git Repositories.
+    .DESCRIPTION
+        Gets Git Repositories from Azure Devops Repos.
+    .EXAMPLE
+        Get-AzDevOpsGitRepositories -Project 'ProjectName'
+    .EXAMPLE
+        Get-AzDevOpsGitRepositories -Project 'ProjectName' -Name 'RepositorieName'
+    #>
+
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true)]

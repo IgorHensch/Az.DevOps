@@ -1,4 +1,21 @@
 function Remove-AzDevOpsTeams {
+    <#
+    .SYNOPSIS
+        Removes Azure DevOps Team.
+    .DESCRIPTION
+        Removes Team in Azure Devops.
+    .LINK
+        Get-AzDevOpsTeams
+    .EXAMPLE
+        Remove-AzDevOpsTeams -Name 'TeamName'
+    .EXAMPLE
+        Remove-AzDevOpsTeams -Name 'TeamName' -Force
+    .EXAMPLE
+        Get-AzDevOpsTeams -Name 'TeamName' | Remove-AzDevOpsTeams
+    .EXAMPLE
+        Get-AzDevOpsTeams | Remove-AzDevOpsTeams
+    #>
+
     [CmdletBinding(DefaultParameterSetName = 'General')]
     param (
         [Parameter(Mandatory = $true, ParameterSetName = 'General')]  

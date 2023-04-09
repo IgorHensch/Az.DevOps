@@ -1,4 +1,17 @@
 function Approve-AzDevOpsReleases {
+    <#
+    .SYNOPSIS
+        Approves Azure DevOps Release Pipeline.
+    .DESCRIPTION
+        Approves Release Pipeline in Azure Devops Releases.
+    .LINK
+        Get-AzDevOpsApprovals
+    .EXAMPLE
+        Approve-AzDevOpsReleases -ApprovalId 'ApprovalId' -Project 'ProjectName'
+    .EXAMPLE
+        Get-AzDevOpsApprovals -Project 'ProjectName' -Id 'ApprovalId' | Approve-AzDevOpsReleases
+    #>
+
     [CmdletBinding(DefaultParameterSetName = 'General')]
     param (
         [Parameter(Mandatory = $true, ParameterSetName = 'General')]

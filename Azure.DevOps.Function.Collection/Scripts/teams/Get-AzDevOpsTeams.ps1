@@ -1,4 +1,15 @@
 function Get-AzDevOpsTeams {
+    <#
+    .SYNOPSIS
+        Gets Azure DevOps Teams.
+    .DESCRIPTION
+        Gets Teams in Azure Devops.
+    .EXAMPLE
+        Get-AzDevOpsTeams
+    .EXAMPLE
+        Get-AzDevOpsTeams -Name 'TeamName'
+    #>
+
     [CmdletBinding()]
     param (
         [string]$Name = '*'

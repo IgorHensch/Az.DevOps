@@ -1,4 +1,17 @@
 function Start-DownloadAzDevOpsReleasesLogs {
+    <#
+    .SYNOPSIS
+        Download Azure DevOps Release Logs.
+    .DESCRIPTION
+        Download Release Logs from Azure Devops Releases.
+    .LINK
+        Get-AzDevOpsReleases
+    .EXAMPLE
+        Start-DownloadAzDevOpsReleasesLogs -ReleaseUrl 'ReleaseUrl' -DownloadPath 'DownloadPath'
+    .EXAMPLE
+        Get-AzDevOpsReleases -Project 'ProjectName' -Name 'ReleaseName' | Start-DownloadAzDevOpsReleasesLogs -DownloadPath 'DownloadPath'
+    #>
+
     [CmdletBinding(DefaultParameterSetName = 'General')]
     param (
         [Parameter(Mandatory = $true, ParameterSetName = 'General')]

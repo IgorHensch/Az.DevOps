@@ -1,4 +1,17 @@
 function Rename-AzDevOpsGitRepositorie {
+    <#
+    .SYNOPSIS
+        Rename Azure DevOps Git Repositorie.
+    .DESCRIPTION
+        Rename Git Repositorie in Azure Devops Repos.
+    .LINK
+        Get-AzDevOpsGitRepositories
+    .EXAMPLE
+        Rename-AzDevOpsGitRepositorie -Project 'ProjectName' -Name 'RepositorieName' -NewName 'NewName'
+    .EXAMPLE
+        Get-AzDevOpsGitRepositories -Project 'ProjectName' -Name 'RepositorieName' | Rename-AzDevOpsGitRepositorie -NewName 'NewName'
+    #>
+
     [CmdletBinding(DefaultParameterSetName = 'General')]
     param (
         [Parameter(Mandatory = $true, ParameterSetName = 'General')]  
@@ -11,7 +24,7 @@ function Rename-AzDevOpsGitRepositorie {
         [Parameter(Mandatory = $true, ParameterSetName = 'Pipeline')]
         [string]$NewName
     )
-    process {
+    end {
         switch ($PSCmdlet.ParameterSetName) {
             'General' {
                 $param = @{
@@ -33,7 +46,6 @@ function Rename-AzDevOpsGitRepositorie {
         }
         $body = $bodyData | ConvertTo-Json
         try {
-            $body 
             Invoke-RestMethod -Uri $gitRepositoriesUri -Body $body -Method Patch -Headers $script:sharedData.Header -ContentType 'application/json'
         }
         catch {

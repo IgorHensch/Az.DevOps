@@ -1,4 +1,17 @@
 function New-AzDevOpsVariableGroup {
+    <#
+    .SYNOPSIS
+        Creates Azure DevOps Variable Group.
+    .DESCRIPTION
+        Creates Variable Group in Azure Devops Library.
+    .EXAMPLE
+        New-AzDevOpsVariableGroup -Project 'ProjectName' -Name 'VariableGroupName' -VariableName 'VariableName' -VariableValue 'VariableValue'
+    .EXAMPLE
+        New-AzDevOpsVariableGroup -Project 'ProjectName' -Name 'VariableGroupName' -VariableName 'VariableName' -VariableValue 'VariableValue' -IsSecret
+    .EXAMPLE
+        New-AzDevOpsVariableGroup -Project 'ProjectName' -Name 'VariableGroupName' -VariableCollectionJson '[{"VariableName": {"value": "VariableValue", "isSecret": false}}]'
+    #>
+
     [CmdletBinding(DefaultParameterSetName = 'General')]
     param (
         [Parameter(ParameterSetName = 'JSON')]
@@ -24,7 +37,7 @@ function New-AzDevOpsVariableGroup {
                 }
             },
             ErrorMessage = 'The JSON has incorrect schema.')]
-        $VariableCollectionJSON
+        $VariableCollectionJson
     )
     switch ($PSCmdlet.ParameterSetName) {
         'General' {

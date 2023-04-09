@@ -1,4 +1,19 @@
 function Get-AzDevOpsPipelineRuns {
+    <#
+    .SYNOPSIS
+        Gets Azure DevOps Pipeline Runs.
+    .DESCRIPTION
+        Gets Pipeline Runs from Azure Devops Pipelines.
+    .LINK
+        Get-AzDevOpsPipelines
+    .EXAMPLE
+        Get-AzDevOpsPipelineRuns -Project 'ProjectName' -PipelineName 'PipelineName'
+    .EXAMPLE
+        Get-AzDevOpsPipelineRuns -Project 'ProjectName' -PipelineName 'PipelineName' -Name 'PipelineRunName'
+    .EXAMPLE
+        Get-AzDevOpsPipelines -Project 'Project' -Name 'PipelineName' | Get-AzDevOpsPipelineRuns
+    #>
+
     [CmdletBinding(DefaultParameterSetName = 'General')]
     param (
         [Parameter(Mandatory = $true, ParameterSetName = 'General')]

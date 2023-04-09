@@ -1,4 +1,15 @@
 function Get-AzDevOpsApprovals {
+    <#
+    .SYNOPSIS
+        Gets Azure DevOps Release Pipeline Approvals.
+    .DESCRIPTION
+        Gets Release Approvals in Azure Devops Releases.
+    .EXAMPLE
+        Get-AzDevOpsApprovals -Project 'ProjectName'
+    .EXAMPLE
+        Get-AzDevOpsApprovals -Project 'ProjectName' -Id 'ApprovalId'
+    #>
+
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true)]

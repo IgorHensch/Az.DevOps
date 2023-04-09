@@ -1,4 +1,15 @@
 function Get-AzDevOpsUser {
+    <#
+    .SYNOPSIS
+        Gets Azure DevOps User.
+    .DESCRIPTION
+        Gets User from Azure Devops.
+    .EXAMPLE
+        Get-AzDevOpsUser
+    .EXAMPLE
+        Get-AzDevOpsUser -PrincipalName 'PrincipalName'
+    #>
+
     [CmdletBinding()]
     param (
         [string]$PrincipalName = '*'

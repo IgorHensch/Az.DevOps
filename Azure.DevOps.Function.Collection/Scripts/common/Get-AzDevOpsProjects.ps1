@@ -1,4 +1,15 @@
 function Get-AzDevOpsProjects {
+    <#
+    .SYNOPSIS
+        Gets Azure DevOps Projects.
+    .DESCRIPTION
+        Gets Projects in Azure Devops.
+    .EXAMPLE
+        Get-AzDevOpsProjects
+    .EXAMPLE
+        Get-AzDevOpsProjects -Name 'ProjectName'
+    #>
+
     [CmdletBinding()]
     param (
         [string]$Name = '*'

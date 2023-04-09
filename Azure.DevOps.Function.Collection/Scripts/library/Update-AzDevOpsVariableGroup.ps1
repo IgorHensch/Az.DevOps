@@ -1,4 +1,17 @@
 function Update-AzDevOpsVariableGroup {
+    <#
+    .SYNOPSIS
+        Updates Azure DevOps Variable Group.
+    .DESCRIPTION
+        Updates Variable Group in Azure Devops Library.
+    .EXAMPLE
+        Update-AzDevOpsVariableGroup -Project 'ProjectName' -Name 'VariableGroupName' -VariableName 'VariableName' -VariableValue 'VariableValue'
+    .EXAMPLE
+        Update-AzDevOpsVariableGroup -Project 'ProjectName' -Name 'VariableGroupName' -VariableName 'VariableName' -VariableValue 'VariableValue' -IsSecret
+    .EXAMPLE
+        Update-AzDevOpsVariableGroup -Project 'ProjectName' -Name 'VariableGroupName' -VariableCollectionJson '[{"VariableName": {"value": "VariableValue", "isSecret": false}}]'
+    #>
+
     [CmdletBinding(DefaultParameterSetName = 'General')]
     param (
         [Parameter(ParameterSetName = 'JSON')]

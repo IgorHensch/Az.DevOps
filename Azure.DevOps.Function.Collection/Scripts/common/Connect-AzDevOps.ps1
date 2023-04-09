@@ -1,4 +1,13 @@
 function Connect-AzDevOps {
+    <#
+    .SYNOPSIS
+        Connect to Azure DevOps with a Personal Access Token.
+    .DESCRIPTION
+        Connect to Azure DevOps with a Personal Access Token.
+    .EXAMPLE
+        Connect-AzDevOps -Organization 'OrganizationName' -PersonalAccessToken 'PersonalAccessToken'
+    #>
+
     [CmdletBinding()]
     param (        
         [Parameter(Mandatory = $true)]

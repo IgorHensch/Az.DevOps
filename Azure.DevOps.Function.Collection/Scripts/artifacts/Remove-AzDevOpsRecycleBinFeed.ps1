@@ -1,7 +1,7 @@
 function Remove-AzDevOpsRecycleBinFeed {
     <#
     .SYNOPSIS
-        Removes Azure DevOps Artifact deleted Feeds 
+        Removes Azure DevOps Artifact deleted Feeds.
     .DESCRIPTION
         Removes deleted Feeds from Azure Devops Artifact Recycle Bin.
     .LINK

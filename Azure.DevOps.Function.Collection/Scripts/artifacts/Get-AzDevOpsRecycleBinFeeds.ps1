@@ -1,7 +1,7 @@
 function Get-AzDevOpsRecycleBinFeeds {
     <#
     .SYNOPSIS
-        Gets Azure DevOps deleted Feeds
+        Gets Azure DevOps deleted Feeds.
     .DESCRIPTION
         Gets deleted Feeds from Azure Devops Artifact Recycle Bin.
     .EXAMPLE
