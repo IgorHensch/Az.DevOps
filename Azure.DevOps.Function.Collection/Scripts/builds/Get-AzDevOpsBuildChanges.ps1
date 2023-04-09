@@ -1,4 +1,17 @@
 function Get-AzDevOpsBuildChanges {
+    <#
+    .SYNOPSIS
+        Gets Azure DevOps Build Changes.
+    .DESCRIPTION
+        Gets Build Changes in Azure Devops Pipelines.
+    .LINK
+        Get-AzDevOpsBuilds
+    .EXAMPLE
+        Get-AzDevOpsBuildChanges -Project 'ProjectName' -Id 'BuildId'
+    .EXAMPLE
+        Get-AzDevOpsBuilds -Project 'ProjectName' -Id 'BuildId' | Get-AzDevOpsBuildChanges
+    #>
+
     [CmdletBinding(DefaultParameterSetName = 'General')]
     param (
         [Parameter(Mandatory = $true, ParameterSetName = 'General')]

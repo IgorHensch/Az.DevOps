@@ -1,4 +1,17 @@
 function Get-AzDevOpsBuildLeases {
+    <#
+    .SYNOPSIS
+        Gets Azure DevOps Build Leases.
+    .DESCRIPTION
+        Gets Build Leases in Azure Devops Pipelines.
+    .LINK
+        Get-AzDevOpsBuilds
+    .EXAMPLE
+        Get-AzDevOpsBuildLeases -Project 'ProjectName' -BuildId 'BuildId'
+    .EXAMPLE
+        Get-AzDevOpsBuilds -Project 'ProjectName' -Id 'BuildId' | Get-AzDevOpsBuildLeases
+    #>
+
     [CmdletBinding(DefaultParameterSetName = 'General')]
     param (
         [Parameter(Mandatory = $true, ParameterSetName = 'General')]

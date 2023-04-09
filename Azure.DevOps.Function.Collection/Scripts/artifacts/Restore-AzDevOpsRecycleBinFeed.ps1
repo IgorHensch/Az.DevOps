@@ -1,7 +1,7 @@
 function Restore-AzDevOpsRecycleBinFeed {
     <#
     .SYNOPSIS
-        Restore Azure DevOps Artifact deleted Feeds 
+        Restore Azure DevOps Artifact deleted Feeds.
     .DESCRIPTION
         Restore deleted Feeds from Azure Devops Artifact Recycle Bin.
     .LINK

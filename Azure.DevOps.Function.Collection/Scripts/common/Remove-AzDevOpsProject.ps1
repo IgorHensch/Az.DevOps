@@ -1,4 +1,21 @@
 function Remove-AzDevOpsProject {
+    <#
+    .SYNOPSIS
+        Removes Azure DevOps Project.
+    .DESCRIPTION
+        Removes Project in Azure Devops.
+    .LINK 
+        Get-AzDevOpsProjects
+    .EXAMPLE
+        Remove-AzDevOpsProject -Name 'ProjectName'
+    .EXAMPLE
+        Remove-AzDevOpsProject -Name 'ProjectName' -Force
+    .EXAMPLE
+        Get-AzDevOpsProjects -Name 'ProjectName' | Remove-AzDevOpsProject
+    .EXAMPLE
+        Get-AzDevOpsProjects | Remove-AzDevOpsProject
+    #>
+
     [CmdletBinding(DefaultParameterSetName = 'General')]
     param (
         [Parameter(Mandatory = $true, ParameterSetName = 'General')]

@@ -1,4 +1,15 @@
 function Get-AzDevOpsBuildMetrics {
+    <#
+    .SYNOPSIS
+        Gets Azure DevOps Build Metrics.
+    .DESCRIPTION
+        Gets Build Metrics in Azure Devops Pipelines.
+    .EXAMPLE
+        Get-AzDevOpsBuildMetrics -Project 'ProjectName'
+    .EXAMPLE
+        Get-AzDevOpsBuildMetrics -Project 'ProjectName' -Name 'MetricName'
+    #>
+
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true)]

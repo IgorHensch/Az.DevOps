@@ -1,7 +1,7 @@
 function Get-AzDevOpsArtifactFeeds {
     <#
     .SYNOPSIS
-        Gets Azure DevOps Artifact Feeds 
+        Gets Azure DevOps Artifact Feeds. 
     .DESCRIPTION
         Gets Feeds from Azure Devops Artifact.
     .EXAMPLE

@@ -1,4 +1,15 @@
 function Get-AzDevOpsReleases {
+    <#
+    .SYNOPSIS
+        Gets Azure DevOps Releases.
+    .DESCRIPTION
+        Gets Releases from Azure Devops Releases.
+    .EXAMPLE
+        Get-AzDevOpsReleases -Project 'ProjectName'
+    .EXAMPLE
+        Get-AzDevOpsReleases -Project 'ProjectName' -Name 'ReleaseName'
+    #>
+
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true)]

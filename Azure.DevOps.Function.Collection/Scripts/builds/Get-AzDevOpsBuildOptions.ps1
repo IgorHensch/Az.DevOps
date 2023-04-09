@@ -1,4 +1,15 @@
 function Get-AzDevOpsBuildOptions {
+    <#
+    .SYNOPSIS
+        Gets Azure DevOps Build Options.
+    .DESCRIPTION
+        Gets Build Options in Azure Devops Pipelines.
+    .EXAMPLE
+        Get-AzDevOpsBuildOptions -Project 'ProjectName'
+    .EXAMPLE
+        Get-AzDevOpsBuildOptions -Project 'ProjectName' -Name 'OptionName'
+    #>
+
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true)]

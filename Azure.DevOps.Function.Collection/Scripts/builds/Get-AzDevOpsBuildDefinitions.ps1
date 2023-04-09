@@ -1,4 +1,15 @@
 function Get-AzDevOpsBuildDefinitions {
+    <#
+    .SYNOPSIS
+        Gets Azure DevOps Build Definitions.
+    .DESCRIPTION
+        Gets Build Definitions in Azure Devops Pipelines.
+    .EXAMPLE
+        Get-AzDevOpsBuildDefinitions -Project 'ProjectName'
+    .EXAMPLE
+        Get-AzDevOpsBuildDefinitions -Project 'ProjectName' -Name 'BuildDefinitionName'
+    #>
+
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true)]

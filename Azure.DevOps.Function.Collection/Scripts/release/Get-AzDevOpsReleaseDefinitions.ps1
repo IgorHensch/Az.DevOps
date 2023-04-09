@@ -1,4 +1,15 @@
-function Get-AzDevOpsReleasesDefinitions {
+function Get-AzDevOpsReleaseDefinitions {
+    <#
+    .SYNOPSIS
+        Gets Azure DevOps Release Definitions.
+    .DESCRIPTION
+        Gets Release Definitions in Azure Devops Releases.
+    .EXAMPLE
+        Get-AzDevOpsReleaseDefinitions -Project 'ProjectName'
+    .EXAMPLE
+        Get-AzDevOpsReleaseDefinitions -Project 'ProjectName' -Name 'ReleaseDefinitionName'
+    #>
+
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true)]

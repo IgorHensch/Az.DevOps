@@ -1,7 +1,7 @@
 function Get-AzDevOpsPackageBadge {
     <#
     .SYNOPSIS
-        Gets Azure DevOps Feed Package Badge
+        Gets Azure DevOps Feed Package Badge.
     .DESCRIPTION
         Gets Feed Package Badge from Azure Devops Artifact.
     .LINK

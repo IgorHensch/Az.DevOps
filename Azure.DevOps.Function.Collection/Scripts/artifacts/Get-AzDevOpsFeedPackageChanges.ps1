@@ -1,7 +1,7 @@
 function Get-AzDevOpsFeedPackageChanges {
     <#
     .SYNOPSIS
-        Gets Azure DevOps Feed Package Changes 
+        Gets Azure DevOps Feed Package Changes.
     .DESCRIPTION
         Gets Feed Package Changes from Azure Devops Artifact.
     .LINK

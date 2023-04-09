@@ -1,4 +1,17 @@
 function Get-AzDevOpsProjectProperties {
+    <#
+    .SYNOPSIS
+        Gets Azure DevOps Project Properties.
+    .DESCRIPTION
+        Gets Properties from Azure Devops Project.
+    .LINK
+        Get-AzDevOpsProjects
+    .EXAMPLE
+        Get-AzDevOpsProjectProperties -Project 'ProjectName'
+    .EXAMPLE
+        Get-AzDevOpsProjects -Name 'ProjectName' | Get-AzDevOpsProjectProperties
+    #>
+
     [CmdletBinding(DefaultParameterSetName = 'General')]
     param (
         [Parameter(Mandatory = $true, ParameterSetName = 'General')]

@@ -1,7 +1,7 @@
 function Get-AzDevOpsArtifactGlobalPermissions {
     <#
     .SYNOPSIS
-        Gets Azure DevOps Global Permissions
+        Gets Azure DevOps Global Permissions.
     .DESCRIPTION
         Gets Global Permissions from Azure Devops Artifact.
     .EXAMPLE

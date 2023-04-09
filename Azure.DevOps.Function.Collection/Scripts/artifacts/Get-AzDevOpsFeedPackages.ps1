@@ -1,7 +1,7 @@
 function Get-AzDevOpsFeedPackages {
     <#
     .SYNOPSIS
-        Gets Azure DevOps Feed Packages 
+        Gets Azure DevOps Feed Packages.
     .DESCRIPTION
         Gets Feed Packages from Azure Devops Artifact.
     .LINK

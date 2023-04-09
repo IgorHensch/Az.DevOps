@@ -1,7 +1,7 @@
 function Get-AzDevOpsFeedPermissions {
     <#
     .SYNOPSIS
-        Gets Azure DevOps Feed Permissions
+        Gets Azure DevOps Feed Permissions.
     .DESCRIPTION
         Gets Feed Permissions from Azure Devops Artifact.
     .EXAMPLE

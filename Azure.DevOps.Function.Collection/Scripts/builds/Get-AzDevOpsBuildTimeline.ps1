@@ -1,4 +1,17 @@
 function Get-AzDevOpsBuildTimeline {
+    <#
+    .SYNOPSIS
+        Gets Azure DevOps Build Timeline.
+    .DESCRIPTION
+        Gets Build Timeline in Azure Devops Pipelines.
+    .LINK
+        Get-AzDevOpsBuilds
+    .EXAMPLE
+        Get-AzDevOpsBuildTimeline -Project 'ProjectName' -BuildId 'BuildId'
+    .EXAMPLE
+        Get-AzDevOpsBuilds -Project 'ProjectName' -Id 'BuildId' | Get-AzDevOpsBuildTimeline
+    #>
+
     [CmdletBinding(DefaultParameterSetName = 'General')]
     param (
         [Parameter(Mandatory = $true, ParameterSetName = 'General')]

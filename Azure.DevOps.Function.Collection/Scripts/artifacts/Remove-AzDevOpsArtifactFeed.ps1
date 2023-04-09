@@ -1,7 +1,7 @@
 function Remove-AzDevOpsArtifactFeed {
     <#
     .SYNOPSIS
-        Removes Azure DevOps Artifact Feeds 
+        Removes Azure DevOps Artifact Feeds.
     .DESCRIPTION
         Removes Feeds from Azure Devops Artifact.
     .LINK

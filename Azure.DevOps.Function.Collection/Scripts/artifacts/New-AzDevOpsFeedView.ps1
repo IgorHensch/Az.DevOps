@@ -1,7 +1,7 @@
 function New-AzDevOpsFeedView {
     <#
     .SYNOPSIS
-        Creates new Azure DevOps Artifact Feeds View
+        Creates new Azure DevOps Artifact Feeds View.
     .DESCRIPTION
         Creates new Feeds View in Azure Devops Artifact.
     .EXAMPLE

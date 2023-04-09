@@ -1,4 +1,15 @@
 function New-AzDevOpsProject {
+    <#
+    .SYNOPSIS
+        Creates new Azure DevOps Project.
+    .DESCRIPTION
+        Creates new Project in Azure Devops.
+    .EXAMPLE
+        New-AzDevOpsProject -Name 'ProjectName'
+    .EXAMPLE
+        New-AzDevOpsProject -Name 'ProjectName' -Description 'Description' -Visibility 'private' -SourceControlType 'Git' -TemplateTypeId '6b724908-ef14-45cf-84f8-768b5384da45'
+    #>
+    
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true)]

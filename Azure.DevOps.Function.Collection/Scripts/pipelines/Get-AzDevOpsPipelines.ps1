@@ -1,4 +1,15 @@
 function Get-AzDevOpsPipelines {
+    <#
+    .SYNOPSIS
+        Gets Azure DevOps Pipelines.
+    .DESCRIPTION
+        Gets Pipelines from Azure Devops Pipelines.
+    .EXAMPLE
+        Get-AzDevOpsPipelines -Project 'ProjectName'
+    .EXAMPLE
+        Get-AzDevOpsPipelines -Project 'ProjectName' -Name 'PipelineName'
+    #>
+
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true)]
