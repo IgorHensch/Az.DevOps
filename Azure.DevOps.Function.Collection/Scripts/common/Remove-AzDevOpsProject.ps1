@@ -3,17 +3,17 @@ function Remove-AzDevOpsProject {
     .SYNOPSIS
         Removes Azure DevOps Project.
     .DESCRIPTION
-        Removes Project in Azure Devops.
+        Removes Project from Azure Devops.
     .LINK 
-        Get-AzDevOpsProjects
+        Get-AzDevOpsProject
     .EXAMPLE
         Remove-AzDevOpsProject -Name 'ProjectName'
     .EXAMPLE
         Remove-AzDevOpsProject -Name 'ProjectName' -Force
     .EXAMPLE
-        Get-AzDevOpsProjects -Name 'ProjectName' | Remove-AzDevOpsProject
+        Get-AzDevOpsProject -Name 'ProjectName' | Remove-AzDevOpsProject
     .EXAMPLE
-        Get-AzDevOpsProjects | Remove-AzDevOpsProject
+        Get-AzDevOpsProject | Remove-AzDevOpsProject
     #>
 
     [CmdletBinding(DefaultParameterSetName = 'General')]
@@ -37,12 +37,12 @@ function Remove-AzDevOpsProject {
                 }
             }
         }
-        $project = Get-AzDevOpsProjects -Name $param.Name
+        $project = Get-AzDevOpsProject -Name $param.Name
         $projectUri = "$($project.url)?api-version=$($script:sharedData.ApiVersion)"
         try {
             if ($Force) {
                 Invoke-RestMethod -Uri $projectUri -Method Delete -Headers $script:sharedData.Header
-                Write-Host "Project $($project.name) has been deleted."
+                Write-Output "Project $($project.name) has been deleted."
             }
             else {
                 $project
@@ -53,10 +53,10 @@ function Remove-AzDevOpsProject {
                 $decision = $Host.UI.PromptForChoice($title, $question, $choices, 1)
                 if ($decision -eq 0) {
                     Invoke-RestMethod -Uri $projectUri -Method Delete -Headers $script:sharedData.Header
-                    Write-Host "Project $($project.name) has been deleted."
+                    Write-Output "Project $($project.name) has been deleted."
                 }
                 else {
-                    Write-Host 'Canceled!'
+                    Write-Output 'Canceled!'
                 }
             }
         }

@@ -19,7 +19,7 @@ function New-AzDevOpsFeedView {
         [string]$Visibility = "collection",
         [string]$Type = "release"
     )
-    $feedUrl = (Get-AzDevOpsArtifactFeeds -Name $FeedName).url
+    $feedUrl = (Get-AzDevOpsArtifactFeed -Name $FeedName).url
     $feedViewsUri = "$FeedUrl/views?api-version=$($script:sharedData.ApiVersionPreview)"
     $bodyData = @{
         visibility = $Visibility

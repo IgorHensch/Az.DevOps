@@ -1,23 +1,25 @@
-function Remove-AzDevOpsArtifactFeed {
+function Remove-AzDevOpsTeam {
     <#
     .SYNOPSIS
-        Removes Azure DevOps Artifact Feeds.
+        Removes Azure DevOps Team.
     .DESCRIPTION
-        Removes Feeds from Azure Devops Artifact.
+        Removes Team from Azure Devops.
     .LINK
-        Get-AzDevOpsArtifactFeed
+        Get-AzDevOpsTeam
     .EXAMPLE
-        Remove-AzDevOpsArtifactFeed -FeedName 'FeedName'
+        Remove-AzDevOpsTeam -Name 'TeamName'
     .EXAMPLE
-        Remove-AzDevOpsArtifactFeed -FeedName 'FeedName' -Force
+        Remove-AzDevOpsTeam -Name 'TeamName' -Force
     .EXAMPLE
-        Get-AzDevOpsArtifactFeed -Project 'ProjectName' -Name 'FeedName' | Remove-AzDevOpsArtifactFeed
+        Get-AzDevOpsTeam -Name 'TeamName' | Remove-AzDevOpsTeam
+    .EXAMPLE
+        Get-AzDevOpsTeam | Remove-AzDevOpsTeam
     #>
 
     [CmdletBinding(DefaultParameterSetName = 'General')]
     param (
         [Parameter(Mandatory = $true, ParameterSetName = 'General')]  
-        [string]$FeedName,
+        [string]$TeamName,
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = 'Pipeline')]
         [PSCustomObject]$PipelineObject,
         [switch]$Force
@@ -26,32 +28,32 @@ function Remove-AzDevOpsArtifactFeed {
         switch ($PSCmdlet.ParameterSetName) {
             'General' {
                 $param = @{
-                    FeedName = $FeedName
+                    TeamName = $TeamName
                 }
             }
             'Pipeline' {
                 $param = @{
-                    FeedName = $PipelineObject.name
+                    TeamName = $PipelineObject.name
                 }
             }
         }
-        $feed = Get-AzDevOpsArtifactFeed -Name $param.FeedName
-        $artifactFeedsUri = "$($Feed.url)`?api-version=$($script:sharedData.ApiVersionPreview)"
+        $team = Get-AzDevOpsTeams -Name $param.TeamName
+        $teamUri = "$($team.url)?api-version=$($script:sharedData.ApiVersionPreview)"
         try {
             if ($Force) {
-                Invoke-RestMethod -Uri $artifactFeedsUri -Method Delete -Headers $script:sharedData.Header
-                Write-Output "Feed $($feed.name) has been deleted."
+                Invoke-RestMethod -Uri $teamUri -Method Delete -Headers $script:sharedData.Header
+                Write-Output "Team $($team.name) has been deleted."
             }
             else {
-                $feed
-                $title = "Delete $($feed.name) Feed."
+                $team
+                $title = "Delete $($team.name) Feed from recycle bin."
                 $question = 'Do you want to continue?'
                 $choices = '&Yes', '&No'
                 
                 $decision = $Host.UI.PromptForChoice($title, $question, $choices, 1)
                 if ($decision -eq 0) {
-                    Invoke-RestMethod -Uri $artifactFeedsUri -Method Delete -Headers $script:sharedData.Header
-                    Write-Output "Feed $($feed.name) has been deleted."
+                    Invoke-RestMethod -Uri $teamUri -Method Delete -Headers $script:sharedData.Header
+                    Write-Output "Team $($team.name) has been deleted."
                 }
                 else {
                     Write-Output 'Canceled!'

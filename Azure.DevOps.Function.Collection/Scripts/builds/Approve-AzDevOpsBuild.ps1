@@ -3,15 +3,15 @@ function Approve-AzDevOpsBuild {
     .SYNOPSIS
         Approves Azure DevOps Build Pipeline.
     .DESCRIPTION
-        Approves Build in Azure Devops Pipelines.
+        Approves Build from Azure Devops Pipelines.
     .LINK
-        Get-AzDevOpsBuildApprovals
+        Get-AzDevOpsBuildApproval
     .EXAMPLE
         Approve-AzDevOpsBuild -ApprovalId 'ApprovalId' -Project 'ProjectName'
     .EXAMPLE
         Approve-AzDevOpsBuild -ApprovalId 'ApprovalId' -Project 'ProjectName' -Comment 'Comment'
     .EXAMPLE
-        Get-AzDevOpsBuildApprovals -Project 'ProjectName' -BuildNumber 'BuildNumber' | Approve-AzDevOpsBuild
+        Get-AzDevOpsBuildApproval -Project 'ProjectName' -BuildNumber 'BuildNumber' | Approve-AzDevOpsBuild
     #>
 
     [CmdletBinding(DefaultParameterSetName = 'General')]

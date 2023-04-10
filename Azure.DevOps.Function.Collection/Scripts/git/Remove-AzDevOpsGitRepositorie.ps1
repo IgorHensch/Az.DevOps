@@ -3,15 +3,15 @@ function Remove-AzDevOpsGitRepositorie {
     .SYNOPSIS
         Removes Azure DevOps Git Repositorie.
     .DESCRIPTION
-        Removes Git Repositorie in Azure Devops Repos.
+        Removes Git Repositorie from Azure Devops Repos.
     .LINK
-        Get-AzDevOpsGitRepositories
+        Get-AzDevOpsGitRepositorie
     .EXAMPLE
         Remove-AzDevOpsGitRepositorie -Project 'ProjectName' -Name 'RepositorieName'
     .EXAMPLE
-        Get-AzDevOpsGitRepositories -Project 'ProjectName' -Name 'RepositorieName' | Remove-AzDevOpsGitRepositorie
+        Get-AzDevOpsGitRepositorie -Project 'ProjectName' -Name 'RepositorieName' | Remove-AzDevOpsGitRepositorie
     .EXAMPLE
-        Get-AzDevOpsGitRepositories -Project 'ProjectName' | Remove-AzDevOpsGitRepositorie
+        Get-AzDevOpsGitRepositorie -Project 'ProjectName' | Remove-AzDevOpsGitRepositorie
     #>
 
     [CmdletBinding(DefaultParameterSetName = 'General')]
@@ -39,12 +39,12 @@ function Remove-AzDevOpsGitRepositorie {
                 }
             }
         }
-        $gitRepositorie = Get-AzDevOpsGitRepositories -Project $param.Project -Name $param.Name
+        $gitRepositorie = Get-AzDevOpsGitRepositorie -Project $param.Project -Name $param.Name
         $gitRepositoriesUri = "$($gitRepositorie.url)?api-version=$($script:sharedData.ApiVersionPreview)"
         try {
             if ($Force) {
                 Invoke-RestMethod -Uri $gitRepositoriesUri -Method Delete -Headers $script:sharedData.Header
-                Write-Host "Git repository $($gitRepositorie.name) has been deleted."
+                Write-Output "Git repository $($gitRepositorie.name) has been deleted."
             }
             else {
                 $gitRepositorie
@@ -55,10 +55,10 @@ function Remove-AzDevOpsGitRepositorie {
                 $decision = $Host.UI.PromptForChoice($title, $question, $choices, 1)
                 if ($decision -eq 0) {
                     Invoke-RestMethod -Uri $gitRepositoriesUri -Method Delete -Headers $script:sharedData.Header
-                    Write-Host "Git repository $($gitRepositorie.name) has been deleted."
+                    Write-Output "Git repository $($gitRepositorie.name) has been deleted."
                 }
                 else {
-                    Write-Host 'Canceled!'
+                    Write-Output 'Canceled!'
                 }
             }
         }

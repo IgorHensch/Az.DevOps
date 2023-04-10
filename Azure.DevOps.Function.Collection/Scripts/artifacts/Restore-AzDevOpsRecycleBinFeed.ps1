@@ -5,13 +5,13 @@ function Restore-AzDevOpsRecycleBinFeed {
     .DESCRIPTION
         Restore deleted Feeds from Azure Devops Artifact Recycle Bin.
     .LINK
-        Get-AzDevOpsRecycleBinFeeds
+        Get-AzDevOpsRecycleBinFeed
     .EXAMPLE
         Restore-AzDevOpsRecycleBinFeed -FeedName 'FeedName'
     .EXAMPLE
         Restore-AzDevOpsRecycleBinFeed -FeedName 'FeedName' -Force
     .EXAMPLE
-        Get-AzDevOpsRecycleBinFeeds -Name 'FeedName' | Restore-AzDevOpsRecycleBinFeed
+        Get-AzDevOpsRecycleBinFeed -Name 'FeedName' | Restore-AzDevOpsRecycleBinFeed
     #>
 
     [CmdletBinding(DefaultParameterSetName = 'General')]
@@ -35,7 +35,7 @@ function Restore-AzDevOpsRecycleBinFeed {
                 }
             }
         }
-        $feed = Get-AzDevOpsRecycleBinFeeds -Name $param.FeedName
+        $feed = Get-AzDevOpsRecycleBinFeed -Name $param.FeedName
         $recycleBinFeedsUri = "https://feeds.$($script:sharedData.CoreServer)/$($script:sharedData.Organization)/_apis/packaging/feedrecyclebin/$($feed.id)?api-version=$($script:sharedData.ApiVersionPreview)"
         $bodyData = @{
             op    = 'replace'
@@ -45,7 +45,7 @@ function Restore-AzDevOpsRecycleBinFeed {
         $body = $bodyData | ConvertTo-Json -AsArray
         try {
             Invoke-RestMethod -Uri $recycleBinFeedsUri -Body $body -Method Patch -Headers $script:sharedData.Header -ContentType 'application/json-patch+json'
-            Write-Host "Feed $($param.FeedName) has been successfully restored!" -ForegroundColor Green
+            Write-Output "Feed $($param.FeedName) has been successfully restored!" -ForegroundColor Green
         }
         catch {
             throw $_

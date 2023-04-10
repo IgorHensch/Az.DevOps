@@ -1,15 +1,15 @@
-function Get-AzDevOpsBuildTimeline {
+function Get-AzDevOpsBuildLease {
     <#
     .SYNOPSIS
-        Gets Azure DevOps Build Timeline.
+        Gets Azure DevOps Build Leases.
     .DESCRIPTION
-        Gets Build Timeline from Azure Devops Pipelines.
+        Gets Build Leases from Azure Devops Pipelines.
     .LINK
         Get-AzDevOpsBuild
     .EXAMPLE
-        Get-AzDevOpsBuildTimeline -Project 'ProjectName' -BuildId 'BuildId'
+        Get-AzDevOpsBuildLease -Project 'ProjectName' -BuildId 'BuildId'
     .EXAMPLE
-        Get-AzDevOpsBuild -Project 'ProjectName' -Id 'BuildId' | Get-AzDevOpsBuildTimeline
+        Get-AzDevOpsBuild -Project 'ProjectName' -Id 'BuildId' | Get-AzDevOpsBuildLease
     #>
 
     [CmdletBinding(DefaultParameterSetName = 'General')]
@@ -25,18 +25,18 @@ function Get-AzDevOpsBuildTimeline {
         switch ($PSCmdlet.ParameterSetName) {
             'General' {
                 $param = @{
-                    BuildUrl = (Get-AzDevOpsBuild -Project $Project -Id $BuildId).url
+                    BuildLeasesUrl = (Get-AzDevOpsBuild -Project $Project -Id $BuildId).url
                 }
             }
             'Pipeline' {
                 $param = @{
-                    BuildUrl = $PipelineObject.url
+                    BuildLeasesUrl = $PipelineObject.url
                 }
             }
         }
-        $buildUri = "$($param.BuildUrl)/Timeline?api-version=$($script:sharedData.ApiVersion)"
+        $buildLeasesUri = "$($param.BuildLeasesUrl)/leases?api-version=$($script:sharedData.ApiVersionPreview)"
         try {
-            Write-Output -InputObject  (Invoke-RestMethod -Uri $buildUri -Method Get -Headers $script:sharedData.Header)
+            Write-Output -InputObject  (Invoke-RestMethod -Uri $buildLeasesUri -Method Get -Headers $script:sharedData.Header).value
         }
         catch {
             throw $_

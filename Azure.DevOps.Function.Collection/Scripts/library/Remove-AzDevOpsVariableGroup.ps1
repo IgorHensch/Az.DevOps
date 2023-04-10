@@ -5,15 +5,15 @@ function Remove-AzDevOpsVariableGroup {
     .DESCRIPTION
         Removes Variable Group from Azure Devops Library.
     .LINK
-        Get-AzDevOpsVariableGroups
+        Get-AzDevOpsVariableGroup
     .EXAMPLE
         Remove-AzDevOpsVariableGroup -Project 'ProjectName' -Name 'VariableGroupName'
     .EXAMPLE
         Remove-AzDevOpsVariableGroup -Project 'ProjectName' -Name 'VariableGroupName' -Force
     .EXAMPLE
-        Get-AzDevOpsVariableGroups -Project 'ProjectName' -Name 'VariableGroupName' | Remove-AzDevOpsVariableGroup
+        Get-AzDevOpsVariableGroup -Project 'ProjectName' -Name 'VariableGroupName' | Remove-AzDevOpsVariableGroup
     .EXAMPLE
-        Get-AzDevOpsVariableGroups -Project 'ProjectName' | Remove-AzDevOpsVariableGroup
+        Get-AzDevOpsVariableGroup -Project 'ProjectName' | Remove-AzDevOpsVariableGroup
     #>
 
     [CmdletBinding(DefaultParameterSetName = 'General')]
@@ -41,12 +41,12 @@ function Remove-AzDevOpsVariableGroup {
                 }
             }
         }
-        $variableGroup = Get-AzDevOpsVariableGroups -Project $param.Project -Name $param.Name
+        $variableGroup = Get-AzDevOpsVariableGroup -Project $param.Project -Name $param.Name
         $variableGroupsUri = "https://$($script:sharedData.CoreServer)/$($script:sharedData.Organization)/$($param.Project)/_apis/distributedtask/variablegroups/$($variableGroup.id)?api-version=$($script:sharedData.ApiVersionPreview)"
         try {
             if ($Force) {
                 Invoke-RestMethod -Uri $variableGroupsUri -Method Delete -Headers $script:sharedData.Header
-                Write-Host "Variable group $($variableGroup.name) has been deleted."
+                Write-Output "Variable group $($variableGroup.name) has been deleted."
             }
             else {
                 $variableGroup
@@ -57,10 +57,10 @@ function Remove-AzDevOpsVariableGroup {
                 $decision = $Host.UI.PromptForChoice($title, $question, $choices, 1)
                 if ($decision -eq 0) {
                     Invoke-RestMethod -Uri $variableGroupsUri -Method Delete -Headers $script:sharedData.Header
-                    Write-Host "Variable group $($variableGroup.name) has been deleted."
+                    Write-Output "Variable group $($variableGroup.name) has been deleted."
                 }
                 else {
-                    Write-Host 'Canceled!'
+                    Write-Output 'Canceled!'
                 }
             }
         }

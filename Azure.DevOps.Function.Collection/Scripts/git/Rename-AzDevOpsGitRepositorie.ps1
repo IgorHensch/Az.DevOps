@@ -5,11 +5,11 @@ function Rename-AzDevOpsGitRepositorie {
     .DESCRIPTION
         Rename Git Repositorie in Azure Devops Repos.
     .LINK
-        Get-AzDevOpsGitRepositories
+        Get-AzDevOpsGitRepositorie
     .EXAMPLE
         Rename-AzDevOpsGitRepositorie -Project 'ProjectName' -Name 'RepositorieName' -NewName 'NewName'
     .EXAMPLE
-        Get-AzDevOpsGitRepositories -Project 'ProjectName' -Name 'RepositorieName' | Rename-AzDevOpsGitRepositorie -NewName 'NewName'
+        Get-AzDevOpsGitRepositorie -Project 'ProjectName' -Name 'RepositorieName' | Rename-AzDevOpsGitRepositorie -NewName 'NewName'
     #>
 
     [CmdletBinding(DefaultParameterSetName = 'General')]
@@ -39,7 +39,7 @@ function Rename-AzDevOpsGitRepositorie {
                 }
             }
         }
-        $gitRepositorie = Get-AzDevOpsGitRepositories -Project $param.Project -Name $param.Name
+        $gitRepositorie = Get-AzDevOpsGitRepositorie -Project $param.Project -Name $param.Name
         $gitRepositoriesUri = "$($gitRepositorie.url)?api-version=$($script:sharedData.ApiVersionPreview)"
         $bodyData = @{
             name = $NewName
