@@ -5,11 +5,11 @@ function Restore-AzDevOpsSoftDeletedGitRepositorie {
     .DESCRIPTION
         Restore Git Repositorie from Azure Devops Soft Deleted Repos.
     .LINK
-        Get-AzDevOpsSoftDeletedGitRepositories
+        Get-AzDevOpsSoftDeletedGitRepositorie
     .EXAMPLE
         Restore-AzDevOpsSoftDeletedGitRepositorie -Project 'ProjectName' -RepositoryId 'RepositoryId'
     .EXAMPLE
-        Get-AzDevOpsSoftDeletedGitRepositories -Project 'ProjectName' -Name 'RepositorieName' | Restore-AzDevOpsSoftDeletedGitRepositorie
+        Get-AzDevOpsSoftDeletedGitRepositorie -Project 'ProjectName' -Name 'RepositorieName' | Restore-AzDevOpsSoftDeletedGitRepositorie
     #>
 
     [CmdletBinding(DefaultParameterSetName = 'General')]

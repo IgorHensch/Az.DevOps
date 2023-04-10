@@ -5,7 +5,7 @@ function Get-AzDevOpsPackageBadge {
     .DESCRIPTION
         Gets Feed Package Badge from Azure Devops Artifact.
     .LINK
-        Get-AzDevOpsFeedPackages
+        Get-AzDevOpsFeedPackage
     .EXAMPLE
         Get-AzDevOpsPackageBadge -FeedName 'FeedName' -PackageName 'PackageName'
     .EXAMPLE
@@ -25,7 +25,7 @@ function Get-AzDevOpsPackageBadge {
         switch ($PSCmdlet.ParameterSetName) {
             'General' {
                 $param = @{
-                    PackageUrl = (Get-AzDevOpsFeedPackages -FeedName $FeedName -Name $PackageName).url
+                    PackageUrl = (Get-AzDevOpsFeedPackage -FeedName $FeedName -Name $PackageName).url
                 }
             }
             'Pipeline' {

@@ -5,13 +5,13 @@ function Remove-AzDevOpsRecycleBinFeed {
     .DESCRIPTION
         Removes deleted Feeds from Azure Devops Artifact Recycle Bin.
     .LINK
-        Get-AzDevOpsRecycleBinFeeds
+        Get-AzDevOpsRecycleBinFeed
     .EXAMPLE
         Remove-AzDevOpsRecycleBinFeed -FeedName 'FeedName'
     .EXAMPLE
         Remove-AzDevOpsRecycleBinFeed -FeedName 'FeedName' -Force
     .EXAMPLE
-        Get-AzDevOpsRecycleBinFeeds -Name 'FeedName' | Remove-AzDevOpsRecycleBinFeed
+        Get-AzDevOpsRecycleBinFeed -Name 'FeedName' | Remove-AzDevOpsRecycleBinFeed
     #>
 
     [CmdletBinding(DefaultParameterSetName = 'General')]
@@ -35,12 +35,12 @@ function Remove-AzDevOpsRecycleBinFeed {
                 }
             }
         }
-        $feed = Get-AzDevOpsRecycleBinFeeds -Name $param.FeedName
+        $feed = Get-AzDevOpsRecycleBinFeed -Name $param.FeedName
         $recycleBinFeedsUri = "https://feeds.$($script:sharedData.CoreServer)/$($script:sharedData.Organization)/_apis/packaging/feedrecyclebin/$($Feed.id)?api-version=$($script:sharedData.ApiVersionPreview)"
         try {
             if ($Force) {
                 Invoke-RestMethod -Uri $recycleBinFeedsUri -Method Delete -Headers $script:sharedData.Header
-                Write-Host "Feed $($feed.name) has been deleted from recycle bin."
+                Write-Output "Feed $($feed.name) has been deleted from recycle bin."
             }
             else {
                 $feed
@@ -51,10 +51,10 @@ function Remove-AzDevOpsRecycleBinFeed {
                 $decision = $Host.UI.PromptForChoice($title, $question, $choices, 1)
                 if ($decision -eq 0) {
                     Invoke-RestMethod -Uri $recycleBinFeedsUri -Method Delete -Headers $script:sharedData.Header
-                    Write-Host "Feed $($feed.name) has been deleted from recycle bin."
+                    Write-Output "Feed $($feed.name) has been deleted from recycle bin."
                 }
                 else {
-                    Write-Host 'Canceled!'
+                    Write-Output 'Canceled!'
                 }
             }
         }
