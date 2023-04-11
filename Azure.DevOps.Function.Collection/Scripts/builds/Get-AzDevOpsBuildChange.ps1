@@ -1,15 +1,15 @@
-function Get-AzDevOpsBuildTimeline {
+function Get-AzDevOpsBuildChange {
     <#
     .SYNOPSIS
-        Gets Azure DevOps Build Timeline.
+        Gets Azure DevOps Build Changes.
     .DESCRIPTION
-        Gets Build Timeline from Azure Devops Pipelines.
+        Gets Build Changes from Azure Devops Pipelines.
     .LINK
         Get-AzDevOpsBuild
     .EXAMPLE
-        Get-AzDevOpsBuildTimeline -Project 'ProjectName' -BuildId 'BuildId'
+        Get-AzDevOpsBuildChange -Project 'ProjectName' -Id 'BuildId'
     .EXAMPLE
-        Get-AzDevOpsBuild -Project 'ProjectName' -Id 'BuildId' | Get-AzDevOpsBuildTimeline
+        Get-AzDevOpsBuild -Project 'ProjectName' -Id 'BuildId' | Get-AzDevOpsBuildChange
     #>
 
     [CmdletBinding(DefaultParameterSetName = 'General')]
@@ -17,7 +17,7 @@ function Get-AzDevOpsBuildTimeline {
         [Parameter(Mandatory = $true, ParameterSetName = 'General')]
         [string]$Project,
         [Parameter(Mandatory = $true, ParameterSetName = 'General')]
-        [string]$BuildId,
+        [string]$Id,
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = 'Pipeline')]
         [PSCustomObject]$PipelineObject
     )
@@ -25,7 +25,7 @@ function Get-AzDevOpsBuildTimeline {
         switch ($PSCmdlet.ParameterSetName) {
             'General' {
                 $param = @{
-                    BuildUrl = (Get-AzDevOpsBuild -Project $Project -Id $BuildId).url
+                    BuildUrl = (Get-AzDevOpsBuild -Project $Project -Id $Id).url
                 }
             }
             'Pipeline' {
@@ -34,9 +34,9 @@ function Get-AzDevOpsBuildTimeline {
                 }
             }
         }
-        $buildUri = "$($param.BuildUrl)/Timeline?api-version=$($script:sharedData.ApiVersion)"
+        $buildChangesUri = "$($param.BuildUrl)/changes?api-version=$($script:sharedData.ApiVersion)&includeSourceChange=true"
         try {
-            Write-Output -InputObject  (Invoke-RestMethod -Uri $buildUri -Method Get -Headers $script:sharedData.Header)
+            Write-Output -InputObject  (Invoke-RestMethod -Uri $buildChangesUri -Method Get -Headers $script:sharedData.Header).value
         }
         catch {
             throw $_
