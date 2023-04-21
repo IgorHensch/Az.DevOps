@@ -19,8 +19,7 @@ function New-AzDevOpsProject {
         [string]$SourceControlType = 'Git',
         [string]$TemplateTypeId = '6b724908-ef14-45cf-84f8-768b5384da45'
     )
-    $projectUri = "https://$($script:sharedData.CoreServer)/$($script:sharedData.Organization)/_apis/projects?api-version=$($script:sharedData.ApiVersion)"
-    $bodyData = @{
+    $body = @{
         name         = $Name
         description  = $Description
         visibility   = $Visibility
@@ -32,13 +31,12 @@ function New-AzDevOpsProject {
                 templateTypeId = $TemplateTypeId
             }
         }
-    }
-    $body = $bodyData | ConvertTo-Json
+    } | ConvertTo-Json -Depth 4
     try {
-        Invoke-RestMethod -Uri $projectUri -Body $body -Method Post -Headers $script:sharedData.Header -ContentType 'application/json'
+        $request = [WebRequestAzureDevOpsCore]::Create($null, $body, 'projects', $script:sharedData.ApiVersion, $null, $null)
+        Write-Output -InputObject $request.value 
     }
     catch {
         throw $_
     }
 }
-

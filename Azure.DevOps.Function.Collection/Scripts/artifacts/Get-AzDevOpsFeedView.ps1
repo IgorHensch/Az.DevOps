@@ -17,9 +17,9 @@ function Get-AzDevOpsFeedView {
         [string]$Name = '*'
     )
     $feedUrl = (Get-AzDevOpsArtifactFeed -Name $FeedName).url
-    $feedViewsUri = "$feedUrl/views?api-version=$($script:sharedData.ApiVersionPreview)"
     try {
-        Write-Output -InputObject  (Invoke-RestMethod -Uri $feedViewsUri -Method Get -Headers $script:sharedData.Header).value | Where-Object { $_.name -imatch "^$Name$" }
+        $request = [WebRequestAzureDevOpsCore]::Get($feedUrl, 'views', $script:sharedData.ApiVersionPreview, $null) 
+        Write-Output -InputObject $request.value.where{ $_.name -imatch "^$Name$" }
     }
     catch {
         throw $_

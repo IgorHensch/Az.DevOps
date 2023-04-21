@@ -42,9 +42,9 @@ function Get-AzDevOpsRecycleBinFeedPackageVersion {
                 }
             }
         }
-        $recycleBinFeedPackageVersions = "$($param.RecycleBinFeedPackageUrl)/Versions?api-version=$($script:sharedData.ApiVersionPreview)"
         try {
-            Write-Output -InputObject  (Invoke-RestMethod -Uri $recycleBinFeedPackageVersions -Method Get -Headers $script:sharedData.Header).value | Where-Object { $_.name -imatch "^$Version$" }
+            $request = [WebRequestAzureDevOpsCore]::Get($param.RecycleBinFeedPackageUrl, 'Versions', $script:sharedData.ApiVersionPreview, $null)
+            Write-Output -InputObject $request.value.where{ $_.name -imatch "^$Version$" }
         }
         catch {
             throw $_

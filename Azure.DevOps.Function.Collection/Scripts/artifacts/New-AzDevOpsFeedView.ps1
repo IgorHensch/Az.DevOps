@@ -20,15 +20,14 @@ function New-AzDevOpsFeedView {
         [string]$Type = "release"
     )
     $feedUrl = (Get-AzDevOpsArtifactFeed -Name $FeedName).url
-    $feedViewsUri = "$FeedUrl/views?api-version=$($script:sharedData.ApiVersionPreview)"
-    $bodyData = @{
+    $body = @{
         visibility = $Visibility
         name       = $Name
         type       = $Type
-    }
-    $body = $bodyData | ConvertTo-Json
+    } | ConvertTo-Json -Depth 2
     try {
-        Invoke-RestMethod -Uri $feedViewsUri -Body $body -Method Post -Headers $script:sharedData.Header -ContentType 'application/json'
+        $request = [WebRequestAzureDevOpsCore]::Create("$feedUrl/views", $body, $script:sharedData.ApiVersionPreview)
+        Write-Output -InputObject $request.value 
     }
     catch {
         throw $_

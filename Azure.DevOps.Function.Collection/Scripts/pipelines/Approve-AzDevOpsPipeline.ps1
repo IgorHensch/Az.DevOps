@@ -1,17 +1,17 @@
-function Approve-AzDevOpsBuild {
+function Approve-AzDevOpsPipeline {
     <#
     .SYNOPSIS
-        Approves Azure DevOps Build Pipeline.
+        Approves Azure DevOps Pipeline.
     .DESCRIPTION
-        Approves Build from Azure Devops Pipelines.
+        Approves Pipeline from Azure Devops Pipelines.
     .LINK
-        Get-AzDevOpsBuildApproval
+        Get-AzDevOpsPipelineApproval
     .EXAMPLE
-        Approve-AzDevOpsBuild -ApprovalId 'ApprovalId' -Project 'ProjectName'
+        Approve-AzDevOpsPipeline -ApprovalId 'ApprovalId' -Project 'ProjectName'
     .EXAMPLE
-        Approve-AzDevOpsBuild -ApprovalId 'ApprovalId' -Project 'ProjectName' -Comment 'Comment'
+        Approve-AzDevOpsPipeline -ApprovalId 'ApprovalId' -Project 'ProjectName' -Comment 'Comment'
     .EXAMPLE
-        Get-AzDevOpsBuildApproval -Project 'ProjectName' -BuildNumber 'BuildNumber' | Approve-AzDevOpsBuild
+        Get-AzDevOpsPipelineApproval -Project 'ProjectName' -BuildNumber 'BuildNumber' | Approve-AzDevOpsPipeline
     #>
 
     [CmdletBinding(DefaultParameterSetName = 'General')]
@@ -39,15 +39,13 @@ function Approve-AzDevOpsBuild {
                 }
             }
         }
-        $approvalsUri = "https://$($script:sharedData.CoreServer)/$($script:sharedData.Organization)/$($param.Project)/_apis/pipelines/approvals/?api-version=$($script:sharedData.ApiVersionPreview)"
-        $bodyData = @{
+        $body = @{
             approvalId = $param.ApprovalId
             status     = 4
             comment    = $Comment
-        }
-        $body = $bodyData | ConvertTo-Json -AsArray
+        } | ConvertTo-Json -Depth 2 -AsArray
         try {
-            Write-Output -InputObject (Invoke-RestMethod -Uri $approvalsUri -Method Patch -Body $body -Headers $script:sharedData.Header -ContentType 'application/json').value
+            [WebRequestAzureDevOpsCore]::Update('pipelines/approvals', $body, 'application/json', $param.Project, $script:sharedData.ApiVersionPreview, $null, $null)
         }
         catch {
             throw $_

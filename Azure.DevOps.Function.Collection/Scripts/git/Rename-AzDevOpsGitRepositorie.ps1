@@ -39,14 +39,12 @@ function Rename-AzDevOpsGitRepositorie {
                 }
             }
         }
-        $gitRepositorie = Get-AzDevOpsGitRepositorie -Project $param.Project -Name $param.Name
-        $gitRepositoriesUri = "$($gitRepositorie.url)?api-version=$($script:sharedData.ApiVersionPreview)"
-        $bodyData = @{
+        $gitRepositorieUrl = (Get-AzDevOpsGitRepositorie -Project $param.Project -Name $param.Name).url
+        $body = @{
             name = $NewName
-        }
-        $body = $bodyData | ConvertTo-Json
+        } | ConvertTo-Json -Depth 2
         try {
-            Invoke-RestMethod -Uri $gitRepositoriesUri -Body $body -Method Patch -Headers $script:sharedData.Header -ContentType 'application/json'
+            [WebRequestAzureDevOpsCore]::Update($gitRepositorieUrl, $body, $script:sharedData.ApiVersion)
         }
         catch {
             throw $_

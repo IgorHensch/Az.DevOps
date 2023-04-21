@@ -29,19 +29,14 @@ function Update-AzDevOpsVariableGroup {
         [Parameter(Mandatory, ParameterSetName = 'JSON')]
         [ValidateScript(
             {
-                $HashTable = $_ | ConvertFrom-Json | ConvertTo-PSFHashtable 
-                foreach ($key in $HashTable.Keys) {
-                    $HashTable | ForEach-Object {
-                        [bool]($key -cmatch '.+') -and ($_.$key | Get-Member -MemberType NoteProperty).Name -Contains 'IsSecret' -and ($_.$key | Get-Member -MemberType NoteProperty).Name -Contains 'Value'
-                    }
-                }
+                [VarGroupJsonSchema]$_
             },
             ErrorMessage = 'The JSON has incorrect schema.')]
-        $VariableCollectionJSON
+        [string]$VariableCollectionJson
     )
     switch ($PSCmdlet.ParameterSetName) {
         'General' {
-            $bodyData = @{
+            $body = @{
                 variables = @{
                     $VariableName = @{
                         value    = $VariableValue
@@ -50,22 +45,20 @@ function Update-AzDevOpsVariableGroup {
                 }
                 name      = $Name
                 type      = 'Vsts'
-            }
+            } | ConvertTo-Json -Depth 10
         }
         'JSON' {
             $VariableCollectionHashtable = $VariableCollectionJSON | ConvertFrom-Json | ConvertTo-PSFHashtable
-            $bodyData = @{
+            $body = @{
                 variables = $VariableCollectionHashtable
                 name      = $Name
                 type      = 'Vsts'
-            }
+            } | ConvertTo-Json -Depth 10
         }
     }
-    $variableGroup = Get-AzDevOpsVariableGroups -Project $Project -Name $Name
-    $variableGroupsUri = "https://$($script:sharedData.CoreServer)/$($script:sharedData.Organization)/$Project/_apis/distributedtask/variablegroups/$($variableGroup.id)?api-version=$($script:sharedData.ApiVersionPreview)"
-    $body = $bodyData | ConvertTo-Json -Depth 10
+    $variableGroup = Get-AzDevOpsVariableGroup -Project $Project -Name $Name
     try {
-        Invoke-RestMethod -Uri $variableGroupsUri -Body $body -Method Put -Headers $script:sharedData.Header -ContentType 'application/json'
+        [WebRequestAzureDevOpsCore]::Set("distributedtask/variablegroups/$($variableGroup.id)", $body, $Project, $script:sharedData.ApiVersionPreview, $null, $null)
     }
     catch {
         throw $_

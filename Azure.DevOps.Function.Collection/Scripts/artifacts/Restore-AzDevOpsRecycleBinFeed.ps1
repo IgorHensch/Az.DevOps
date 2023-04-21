@@ -36,16 +36,13 @@ function Restore-AzDevOpsRecycleBinFeed {
             }
         }
         $feed = Get-AzDevOpsRecycleBinFeed -Name $param.FeedName
-        $recycleBinFeedsUri = "https://feeds.$($script:sharedData.CoreServer)/$($script:sharedData.Organization)/_apis/packaging/feedrecyclebin/$($feed.id)?api-version=$($script:sharedData.ApiVersionPreview)"
-        $bodyData = @{
+        $body = @{
             op    = 'replace'
             path  = '/isDeleted'
             value = $false
-        }
-        $body = $bodyData | ConvertTo-Json -AsArray
+        } | ConvertTo-Json -Depth 2 -AsArray
         try {
-            Invoke-RestMethod -Uri $recycleBinFeedsUri -Body $body -Method Patch -Headers $script:sharedData.Header -ContentType 'application/json-patch+json'
-            Write-Output "Feed $($param.FeedName) has been successfully restored!" -ForegroundColor Green
+            [WebRequestAzureDevOpsCore]::Update("packaging/feedrecyclebin/$($feed.id)", $body, 'application/json-patch+json', $null, $script:sharedData.ApiVersion, 'feeds.', $null)
         }
         catch {
             throw $_

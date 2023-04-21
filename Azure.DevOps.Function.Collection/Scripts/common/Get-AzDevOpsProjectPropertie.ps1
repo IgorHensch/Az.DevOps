@@ -32,9 +32,9 @@ function Get-AzDevOpsProjectPropertie {
                 }
             }
         }
-        $projectPropertiesUri = "$($param.ProjectPropertieUrl)/properties?api-version=$($script:sharedData.ApiVersionPreview)"
         try {
-            Write-Output -InputObject  (Invoke-RestMethod -Uri $projectPropertiesUri -Method Get -Headers $script:sharedData.Header).value
+            $request = [WebRequestAzureDevOpsCore]::Get($param.ProjectPropertieUrl, 'properties', $script:sharedData.ApiVersionPreview, $null)
+            Write-Output -InputObject $request.value
         }
         catch {
             throw $_

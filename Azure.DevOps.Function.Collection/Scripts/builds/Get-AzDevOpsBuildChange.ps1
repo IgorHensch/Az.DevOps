@@ -34,9 +34,9 @@ function Get-AzDevOpsBuildChange {
                 }
             }
         }
-        $buildChangesUri = "$($param.BuildUrl)/changes?api-version=$($script:sharedData.ApiVersion)&includeSourceChange=true"
         try {
-            Write-Output -InputObject  (Invoke-RestMethod -Uri $buildChangesUri -Method Get -Headers $script:sharedData.Header).value
+            $request = [WebRequestAzureDevOpsCore]::Get($param.BuildUrl, 'changes', "$($script:sharedData.ApiVersion)&includeSourceChange=true", $null) 
+            Write-Output -InputObject $request.value
         }
         catch {
             throw $_

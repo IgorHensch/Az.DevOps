@@ -19,19 +19,16 @@ function Connect-AzDevOps {
         [string]$ApiVersion1Preview2 = '7.0-preview.2',
         [string]$CoreServer = 'dev.azure.com'
     )
-
-    $header = @{Authorization = ("Basic {0}" -f [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes(("{0}:{1}" -f $null, $PersonalAccessToken)))) }
     $script:sharedData = @{
-        Header             = $header
+        Header             = [Header]::new($PersonalAccessToken).Header
         Organization       = $Organization
         ApiVersion         = $ApiVersion
         ApiVersionPreview  = $ApiVersionPreview
         ApiVersionPreview2 = $ApiVersionPreview2
         CoreServer         = $CoreServer
     }
-    $profileUri = "https://vssps.$($script:sharedData.CoreServer)/$($script:sharedData.Organization)/_apis/profile/profiles/me?api-version=$($script:sharedData.ApiVersionPreview)"
     try {
-        Invoke-RestMethod -Method Get -Uri $profileUri -Headers $script:sharedData.Header
+        [WebRequestAzureDevOpsCore]::Get('profile/profiles/me', $script:sharedData.ApiVersionPreview, $null, 'vssps.', $null).Value
     }
     catch {
         throw $_

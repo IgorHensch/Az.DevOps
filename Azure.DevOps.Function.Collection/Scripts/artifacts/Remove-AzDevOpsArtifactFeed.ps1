@@ -36,27 +36,9 @@ function Remove-AzDevOpsArtifactFeed {
             }
         }
         $feed = Get-AzDevOpsArtifactFeed -Name $param.FeedName
-        $artifactFeedsUri = "$($Feed.url)`?api-version=$($script:sharedData.ApiVersionPreview)"
         try {
-            if ($Force) {
-                Invoke-RestMethod -Uri $artifactFeedsUri -Method Delete -Headers $script:sharedData.Header
-                Write-Output "Feed $($feed.name) has been deleted."
-            }
-            else {
-                $feed
-                $title = "Delete $($feed.name) Feed."
-                $question = 'Do you want to continue?'
-                $choices = '&Yes', '&No'
-                
-                $decision = $Host.UI.PromptForChoice($title, $question, $choices, 1)
-                if ($decision -eq 0) {
-                    Invoke-RestMethod -Uri $artifactFeedsUri -Method Delete -Headers $script:sharedData.Header
-                    Write-Output "Feed $($feed.name) has been deleted."
-                }
-                else {
-                    Write-Output 'Canceled!'
-                }
-            }
+            $feed
+            [WebRequestAzureDevOpsCore]::Delete($feed, $Force, $script:sharedData.ApiVersionPreview).Value
         }
         catch {
             throw $_

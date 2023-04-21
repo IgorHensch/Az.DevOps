@@ -38,27 +38,9 @@ function Remove-AzDevOpsProject {
             }
         }
         $project = Get-AzDevOpsProject -Name $param.Name
-        $projectUri = "$($project.url)?api-version=$($script:sharedData.ApiVersion)"
         try {
-            if ($Force) {
-                Invoke-RestMethod -Uri $projectUri -Method Delete -Headers $script:sharedData.Header
-                Write-Output "Project $($project.name) has been deleted."
-            }
-            else {
-                $project
-                $title = "Delete $($project.name) Project."
-                $question = 'Do you want to continue?'
-                $choices = '&Yes', '&No'
-            
-                $decision = $Host.UI.PromptForChoice($title, $question, $choices, 1)
-                if ($decision -eq 0) {
-                    Invoke-RestMethod -Uri $projectUri -Method Delete -Headers $script:sharedData.Header
-                    Write-Output "Project $($project.name) has been deleted."
-                }
-                else {
-                    Write-Output 'Canceled!'
-                }
-            }
+            $project
+            [WebRequestAzureDevOpsCore]::Delete($project, $Force, $script:sharedData.ApiVersion).Value
         }
         catch {
             throw $_

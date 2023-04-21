@@ -37,9 +37,9 @@ function Get-AzDevOpsFeedPackageChange {
                 }
             }
         }
-        $feedPackageChangessUri = "$($param.FeedUrl)/packagechanges?api-version=$($script:sharedData.ApiVersionPreview)"
         try {
-            Write-Output -InputObject  (Invoke-RestMethod -Uri $feedPackageChangessUri -Method Get -Headers $script:sharedData.Header).packageChanges.package | Where-Object { $_.name -imatch "^$Name$" }
+            $request = [WebRequestAzureDevOpsCore]::Get($param.FeedUrl, 'packagechanges', $script:sharedData.ApiVersionPreview, $null) 
+            Write-Output -InputObject $request.value.packageChanges.package.where{ $_.name -imatch "^$Name$" }
         }
         catch {
             throw $_
