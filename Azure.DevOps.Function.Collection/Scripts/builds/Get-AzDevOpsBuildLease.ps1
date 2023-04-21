@@ -34,9 +34,9 @@ function Get-AzDevOpsBuildLease {
                 }
             }
         }
-        $buildLeasesUri = "$($param.BuildLeasesUrl)/leases?api-version=$($script:sharedData.ApiVersionPreview)"
         try {
-            Write-Output -InputObject  (Invoke-RestMethod -Uri $buildLeasesUri -Method Get -Headers $script:sharedData.Header).value
+            $request = [WebRequestAzureDevOpsCore]::Get($param.BuildLeasesUrl, 'leases', $script:sharedData.ApiVersion, $null) 
+            Write-Output -InputObject $request.value
         }
         catch {
             throw $_

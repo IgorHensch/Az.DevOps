@@ -15,14 +15,16 @@ function New-AzDevOpsGitRepositorie {
         [Parameter(Mandatory = $true)]
         [string]$Name
     )
-    $gitRepositoriesUri = "https://$($script:sharedData.CoreServer)/$($script:sharedData.Organization)/$Project/_apis/git/repositories/?api-version=$($script:sharedData.ApiVersionPreview)"
-    $bodyData = @{
+    $body = @{
         name    = $Name
-        project = @{ id = $((Get-AzDevOpsProject -Name $Project).id) }
-    }
-    $body = $bodyData | ConvertTo-Json
+        project = @{ 
+            id = (Get-AzDevOpsProject -Name $Project).id
+        }
+    } | ConvertTo-Json
+
     try {
-        Invoke-RestMethod -Uri $gitRepositoriesUri -Body $body -Method Post -Headers $script:sharedData.Header -ContentType 'application/json'
+        $request = [WebRequestAzureDevOpsCore]::Create($Project, $body, 'git/repositories', $script:sharedData.ApiVersion, $null, $null)
+        Write-Output -InputObject $request.value 
     }
     catch {
         throw $_

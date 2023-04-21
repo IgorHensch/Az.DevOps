@@ -5,11 +5,11 @@ function Approve-AzDevOpsRelease {
     .DESCRIPTION
         Approves Release Pipeline in Azure Devops Releases.
     .LINK
-        Get-AzDevOpsApproval
+        Get-AzDevOpsReleaseApproval
     .EXAMPLE
         Approve-AzDevOpsRelease -ApprovalId 'ApprovalId' -Project 'ProjectName'
     .EXAMPLE
-        Get-AzDevOpsApproval -Project 'ProjectName' -Id 'ApprovalId' | Approve-AzDevOpsRelease
+        Get-AzDevOpsReleaseApproval -Project 'ProjectName' -Id 'ApprovalId' | Approve-AzDevOpsRelease
     #>
 
     [CmdletBinding(DefaultParameterSetName = 'General')]
@@ -25,7 +25,7 @@ function Approve-AzDevOpsRelease {
         switch ($PSCmdlet.ParameterSetName) {
             'General' {
                 $param = @{
-                    ApprovalUrl = (Get-AzDevOpsApproval -Project $Project -Id $ApprovalId).url
+                    ApprovalUrl = (Get-AzDevOpsReleaseApproval -Project $Project -Id $ApprovalId).url
                 }
             }
             'Pipeline' {
@@ -34,13 +34,11 @@ function Approve-AzDevOpsRelease {
                 }
             }
         }
-        $approvalsUri = "$($param.ApprovalUrl)?api-version=$($script:sharedData.ApiVersionPreview)"
-        $bodyData = @{
+        $body = @{
             status = "approved"
-        }
-        $body = $bodyData | ConvertTo-Json
+        } | ConvertTo-Json -Depth 2
         try {
-            Invoke-RestMethod -Uri $approvalsUri -Method Patch -Body $body -Headers $script:sharedData.Header -ContentType 'application/json'
+            [WebRequestAzureDevOpsCore]::Update($param.ApprovalUrl, $body, $script:sharedData.ApiVersionPreview)
         }
         catch {
             throw $_

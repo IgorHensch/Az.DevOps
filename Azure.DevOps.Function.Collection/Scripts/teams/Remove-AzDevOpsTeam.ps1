@@ -37,28 +37,10 @@ function Remove-AzDevOpsTeam {
                 }
             }
         }
-        $team = Get-AzDevOpsTeams -Name $param.TeamName
-        $teamUri = "$($team.url)?api-version=$($script:sharedData.ApiVersionPreview)"
+        $team = Get-AzDevOpsTeam -Name $param.TeamName
         try {
-            if ($Force) {
-                Invoke-RestMethod -Uri $teamUri -Method Delete -Headers $script:sharedData.Header
-                Write-Output "Team $($team.name) has been deleted."
-            }
-            else {
-                $team
-                $title = "Delete $($team.name) Feed from recycle bin."
-                $question = 'Do you want to continue?'
-                $choices = '&Yes', '&No'
-                
-                $decision = $Host.UI.PromptForChoice($title, $question, $choices, 1)
-                if ($decision -eq 0) {
-                    Invoke-RestMethod -Uri $teamUri -Method Delete -Headers $script:sharedData.Header
-                    Write-Output "Team $($team.name) has been deleted."
-                }
-                else {
-                    Write-Output 'Canceled!'
-                }
-            }
+            $team
+            [WebRequestAzureDevOpsCore]::Delete($team, $Force, $script:sharedData.ApiVersion).Value
         }
         catch {
             throw $_

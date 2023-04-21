@@ -17,9 +17,9 @@ function Get-AzDevOpsRecycleBinFeedPackage {
         [string]$Name = '*'
     )
     $feedUrl = (Get-AzDevOpsArtifactFeed -Name $FeedName).url
-    $recycleBinPackagesUri = "$feedUrl/RecycleBin/Packages?api-version=$($script:sharedData.ApiVersionPreview)"
     try {
-        Write-Output -InputObject  (Invoke-RestMethod -Uri $recycleBinPackagesUri -Method Get -Headers $script:sharedData.Header).value | Where-Object { $_.name -imatch "^$Name$" }
+        $request = [WebRequestAzureDevOpsCore]::Get($feedUrl, 'RecycleBin/Packages', $script:sharedData.ApiVersionPreview, $null)
+        Write-Output -InputObject $request.value.where{ $_.name -imatch "^$Name$" }
     }
     catch {
         throw $_

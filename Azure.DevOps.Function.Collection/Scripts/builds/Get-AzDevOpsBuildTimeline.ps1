@@ -34,9 +34,9 @@ function Get-AzDevOpsBuildTimeline {
                 }
             }
         }
-        $buildUri = "$($param.BuildUrl)/Timeline?api-version=$($script:sharedData.ApiVersion)"
         try {
-            Write-Output -InputObject  (Invoke-RestMethod -Uri $buildUri -Method Get -Headers $script:sharedData.Header)
+            $request = [WebRequestAzureDevOpsCore]::Get($param.BuildUrl, 'Timeline', $script:sharedData.ApiVersion, $null) 
+            Write-Output -InputObject $request.Value
         }
         catch {
             throw $_

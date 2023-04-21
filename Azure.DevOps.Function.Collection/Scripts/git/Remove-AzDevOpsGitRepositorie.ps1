@@ -40,27 +40,9 @@ function Remove-AzDevOpsGitRepositorie {
             }
         }
         $gitRepositorie = Get-AzDevOpsGitRepositorie -Project $param.Project -Name $param.Name
-        $gitRepositoriesUri = "$($gitRepositorie.url)?api-version=$($script:sharedData.ApiVersionPreview)"
         try {
-            if ($Force) {
-                Invoke-RestMethod -Uri $gitRepositoriesUri -Method Delete -Headers $script:sharedData.Header
-                Write-Output "Git repository $($gitRepositorie.name) has been deleted."
-            }
-            else {
-                $gitRepositorie
-                $title = "Delete $($gitRepositorie.name) Git repository."
-                $question = 'Do you want to continue?'
-                $choices = '&Yes', '&No'
-            
-                $decision = $Host.UI.PromptForChoice($title, $question, $choices, 1)
-                if ($decision -eq 0) {
-                    Invoke-RestMethod -Uri $gitRepositoriesUri -Method Delete -Headers $script:sharedData.Header
-                    Write-Output "Git repository $($gitRepositorie.name) has been deleted."
-                }
-                else {
-                    Write-Output 'Canceled!'
-                }
-            }
+            $gitRepositorie
+            [WebRequestAzureDevOpsCore]::Delete($gitRepositorie, $Force, $script:sharedData.ApiVersion).Value
         }
         catch {
             throw $_
