@@ -36,27 +36,9 @@ function Remove-AzDevOpsRecycleBinFeed {
             }
         }
         $feed = Get-AzDevOpsRecycleBinFeed -Name $param.FeedName
-        $recycleBinFeedsUri = "https://feeds.$($script:sharedData.CoreServer)/$($script:sharedData.Organization)/_apis/packaging/feedrecyclebin/$($Feed.id)?api-version=$($script:sharedData.ApiVersionPreview)"
         try {
-            if ($Force) {
-                Invoke-RestMethod -Uri $recycleBinFeedsUri -Method Delete -Headers $script:sharedData.Header
-                Write-Output "Feed $($feed.name) has been deleted from recycle bin."
-            }
-            else {
-                $feed
-                $title = "Delete $($feed.name) Feed from recycle bin."
-                $question = 'Do you want to continue?'
-                $choices = '&Yes', '&No'
-            
-                $decision = $Host.UI.PromptForChoice($title, $question, $choices, 1)
-                if ($decision -eq 0) {
-                    Invoke-RestMethod -Uri $recycleBinFeedsUri -Method Delete -Headers $script:sharedData.Header
-                    Write-Output "Feed $($feed.name) has been deleted from recycle bin."
-                }
-                else {
-                    Write-Output 'Canceled!'
-                }
-            }
+            $feed
+            [WebRequestAzureDevOpsCore]::Delete($feed, "packaging/feedrecyclebin/$($feed.id)", $null, $Force, $script:sharedData.ApiVersionPreview, 'feeds.').Value
         }
         catch {
             throw $_

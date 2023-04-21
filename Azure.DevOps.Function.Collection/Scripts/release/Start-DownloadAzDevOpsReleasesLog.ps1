@@ -35,9 +35,16 @@ function Start-DownloadAzDevOpsReleasesLog {
                 }
             }
         }
+        $releaseUri = "$($param.ReleaseUrl)/logs?api-version=$($script:sharedData.ApiVersionPreview)"
         try {
-            $releaseUri = "$($param.ReleaseUrl)/logs?api-version=$($script:sharedData.ApiVersionPreview)"
-            Invoke-RestMethod -Uri $releaseUri -Method Get -Headers $script:sharedData.Header -ContentType 'application/zip' -OutFile "$DownloadPath/Release-$($param.ReleaseUrl.Split('/')[-1]).zip"
+            $invokeRestMethodParam = @{
+                Uri         = $releaseUri
+                Method      = 'Get'
+                Headers     = $script:sharedData.Header
+                ContentType = 'application/zip'
+                OutFile     = "$DownloadPath/Release-$($param.ReleaseUrl.Split('/')[-1]).zip"
+            }
+            Invoke-RestMethod @invokeRestMethodParam
         }
         catch {
             throw $_

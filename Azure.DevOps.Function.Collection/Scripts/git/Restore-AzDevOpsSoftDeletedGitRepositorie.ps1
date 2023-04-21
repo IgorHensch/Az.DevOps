@@ -36,13 +36,11 @@ function Restore-AzDevOpsSoftDeletedGitRepositorie {
                 }
             }
         }
-        $softDeletedGitRepositoriesUri = "https://$($script:sharedData.CoreServer)/$($script:sharedData.Organization)/$($param.Project)/_apis/git/recycleBin/repositories/$($param.RepositoryId)`?api-version=$($script:sharedData.ApiVersionPreview)"
-        $bodyData = @{
+        $body = @{
             deleted = 'false'
-        }
-        $body = $bodyData | ConvertTo-Json
+        } | ConvertTo-Json -Depth 2
         try {
-            Invoke-RestMethod -Uri $softDeletedGitRepositoriesUri -Body $body -Method Patch -Headers $script:sharedData.Header -ContentType 'application/json'
+            [WebRequestAzureDevOpsCore]::Update("git/recycleBin/repositories/$($param.RepositoryId)", $body, 'application/json', $param.Project, $script:sharedData.ApiVersion, $null, $null)
         }
         catch {
             throw $_

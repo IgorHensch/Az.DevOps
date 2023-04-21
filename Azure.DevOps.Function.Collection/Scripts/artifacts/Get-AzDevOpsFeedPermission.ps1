@@ -17,9 +17,9 @@ function Get-AzDevOpsFeedPermission {
         [string]$Role = '*'
     )
     $feedUrl = (Get-AzDevOpsArtifactFeed -Name $FeedName).url
-    $feedPermissionsUri = "$FeedUrl/permissions?api-version=$($script:sharedData.ApiVersionPreview)"
     try {
-        Write-Output -InputObject  (Invoke-RestMethod -Uri $feedPermissionsUri -Method Get -Headers $script:sharedData.Header).value | Where-Object { $_.role -imatch "^$Role$" }
+        $request = [WebRequestAzureDevOpsCore]::Get($feedUrl, 'permissions', $script:sharedData.ApiVersionPreview, $null) 
+        Write-Output -InputObject $request.value.where{ $_.role -imatch "^$Role$" }
     }
     catch {
         throw $_

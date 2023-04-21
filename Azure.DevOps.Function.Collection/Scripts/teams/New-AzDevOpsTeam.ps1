@@ -19,14 +19,22 @@ function New-AzDevOpsTeam {
         [string]$Description
     )
     $projectUrl = (Get-AzDevOpsProject -Name $Project).url
-    $teamsUri = "$ProjectUrl/teams?api-version=$($script:sharedData.ApiVersionPreview)"
-    $bodyData = @{
+    # $teamsUri = "$ProjectUrl/teams?api-version=$($script:sharedData.ApiVersionPreview)"
+    $body = @{
         name        = $Name
         description = $Description
-    }
-    $body = $bodyData | ConvertTo-Json
+    } | ConvertTo-Json -Depth 2
     try {
-        Invoke-RestMethod -Uri $teamsUri -Body $body -Method Post -Headers $script:sharedData.Header -ContentType 'application/json'
+        # $param = @{
+        #     Uri         = $teamsUri
+        #     Body        = $body
+        #     Method      = 'Post'
+        #     Headers     = $script:sharedData.Header
+        #     ContentType = 'application/json'
+        # }
+        # Invoke-RestMethod @param
+        $request = [WebRequestAzureDevOpsCore]::Create("$projectUrl/teams", $body, $script:sharedData.ApiVersionPreview)
+        Write-Output -InputObject $request.value 
     }
     catch {
         throw $_

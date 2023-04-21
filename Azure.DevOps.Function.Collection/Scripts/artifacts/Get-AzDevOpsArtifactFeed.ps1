@@ -17,9 +17,9 @@ function Get-AzDevOpsArtifactFeed {
         [string]$Project,
         [string]$Name = '*'
     )
-    $artifactFeedsUri = "https://feeds.$($script:sharedData.CoreServer)/$($script:sharedData.Organization)/$Project/_apis/packaging/Feeds?api-version=$($script:sharedData.ApiVersionPreview)"
     try {
-        Write-Output -InputObject  (Invoke-RestMethod -Uri $artifactFeedsUri -Method Get -Headers $script:sharedData.Header).value | Where-Object { $_.name -imatch "^$Name$" }
+        $request = [WebRequestAzureDevOpsCore]::Get('packaging/Feeds', $script:sharedData.ApiVersionPreview, $Project, 'feeds.', $null)
+        Write-Output -InputObject $request.value.where{ $_.name -imatch "^$Name$" }
     }
     catch {
         throw $_

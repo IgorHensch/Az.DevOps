@@ -31,14 +31,14 @@ function New-AzDevOpsArtifactFeed {
         [bool]$HideDeletedPackageVersions = $true,
         [bool]$BadgesEnabled = $true,
         [bool]$UpstreamEnabled = $true,
-        $UpstreamSources = {
+        [scriptblock]$UpstreamSources = {
             @{
                 id                 = "40cea34f-c6ef-4898-b379-626926723a16"
                 name               = "npmjs"
                 protocol           = "npm"
                 location           = "https://registry.npmjs.org/"
                 upstreamSourceType = "public"
-            },
+            }
             @{
                 id                 = "2a28a64e-8822-4bf7-bc7b-5f1475178b36"
                 name               = "nuget.org"
@@ -48,8 +48,7 @@ function New-AzDevOpsArtifactFeed {
             }
         }
     )
-    $artifactFeedsUri = "https://feeds.$($script:sharedData.CoreServer)/$($script:sharedData.Organization)/$Project/_apis/packaging/feeds?api-version=$($script:sharedData.ApiVersionPreview)"
-    $bodyData = @{
+    $body = @{
         description                = $Description
         hideDeletedPackageVersions = $HideDeletedPackageVersions
         badgesEnabled              = $BadgesEnabled
@@ -58,10 +57,10 @@ function New-AzDevOpsArtifactFeed {
         fullyQualifiedName         = $Name
         upstreamSources            = $UpstreamSources
         capabilities               = $Capabilities
-    }
-    $body = $bodyData | ConvertTo-Json
+    } | ConvertTo-Json
     try {
-        Invoke-RestMethod -Uri $ArtifactFeedsUri -Body $body -Method Post -Headers $script:sharedData.Header -ContentType 'application/json'
+        $request = [WebRequestAzureDevOpsCore]::Create($Project, $body, 'packaging/feeds', $script:sharedData.ApiVersion, 'feeds.', $null)
+        Write-Output -InputObject $request.value 
     }
     catch {
         throw $_

@@ -14,9 +14,9 @@ function Get-AzDevOpsUser {
     param (
         [string]$PrincipalName = '*'
     )
-    $usersUri = "https://vssps.$($script:sharedData.CoreServer)/$($script:sharedData.Organization)/_apis/graph/users?api-version=$($script:sharedData.ApiVersionPreview)&subjectTypes=aad&continuationToken="
     try {
-        Write-Output -InputObject  (Invoke-RestMethod -Uri $usersUri -Method Get -Headers $script:sharedData.Header).value | Where-Object { $_.principalName -imatch "^$PrincipalName$" }
+        $request = [WebRequestAzureDevOpsCore]::Get('graph/users', $script:sharedData.ApiVersionPreview, $null, 'vssps.', $null)
+        Write-Output -InputObject $request.value.where{ $_.principalName -imatch "^$PrincipalName$" }
     }
     catch {
         throw $_

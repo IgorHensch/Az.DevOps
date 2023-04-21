@@ -39,13 +39,12 @@ function Get-AzDevOpsPipelineRun {
                 }
             }
         }
-        $pipelineRunsUri = "https://$($script:sharedData.CoreServer)/$($script:sharedData.Organization)/$($param.Project)/_apis/pipelines/$($param.PipelineId)/runs?api-version=$($script:sharedData.ApiVersionPreview)"
         try {
-            Write-Output -InputObject  (Invoke-RestMethod -Uri $pipelineRunsUri -Method Get -Headers $script:sharedData.Header).value | Where-Object { $_.name -imatch "^$Name$" }
+            $request = [WebRequestAzureDevOpsCore]::Get("pipelines/$($param.PipelineId)/runs", $script:sharedData.ApiVersion, $param.Project, $null, $null)
+            Write-Output -InputObject $request.value.where{ $_.name -imatch "^$Name$" } 
         }
         catch {
             throw $_
         }
     }
 }
-

@@ -35,9 +35,9 @@ function Get-AzDevOpsTeamMember {
                 }
             }
         }
-        $teamMembersUri = "$($param.TeamUrl)/members?$mine=false&$top=10&$skip&api-version=$($script:sharedData.ApiVersionPreview)"
         try {
-            Write-Output -InputObject  (Invoke-RestMethod -Uri $teamMembersUri -Method Get -Headers $script:sharedData.Header).value | Where-Object { $_.name -imatch "^$Name$" }
+            $request = [WebRequestAzureDevOpsCore]::Get("$($param.TeamUrl)/members", $null, $script:sharedData.ApiVersionPreview, '$mine=false&$top=10&$skip&')
+            Write-Output -InputObject $request.value.where{ $_.name -imatch "^$Name$" }
         }
         catch {
             throw $_

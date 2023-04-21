@@ -1,13 +1,13 @@
-function Get-AzDevOpsBuildApproval {
+function Get-AzDevOpsPipelineApproval {
     <#
     .SYNOPSIS
-        Gets Azure DevOps Build Pipeline Approvals.
+        Gets Azure DevOps Pipeline Approvals.
     .DESCRIPTION
-        Gets Build Approvals from Azure Devops Pipelines.
+        Gets Pipeline Approvals from Azure Devops Pipelines.
     .EXAMPLE
-        Get-AzDevOpsBuildApproval -Project 'ProjectName'
+        Get-AzDevOpsPipelineApproval -Project 'ProjectName'
     .EXAMPLE
-        Get-AzDevOpsBuildApproval -Project 'ProjectName' -BuildNumber 'BuildNumber'
+        Get-AzDevOpsPipelineApproval -Project 'ProjectName' -BuildNumber 'BuildNumber'
     #>
 
     [CmdletBinding()]
@@ -18,21 +18,26 @@ function Get-AzDevOpsBuildApproval {
     )
     process {
         try {
-            $output = @()
-            Get-AzDevOpsBuild -Project $Project | Where-Object { $_.status -eq 'inProgress' } | ForEach-Object {
+            $output = (Get-AzDevOpsBuild -Project $Project).where{ 
+                $_.status -eq 'inProgress' 
+            }.foreach{
                 $build = $_
-                $buildRecords = ($build | Get-AzDevOpsBuildTimeline).records
-                $buildStage = $buildRecords | Where-Object { $_.type -eq 'Stage' -and $_.state -eq 'pending' }
-                $approval = $buildRecords | Where-Object { $_.type -eq 'Checkpoint.Approval' }
+                $buildRecords = ($build | Get-AzDevOpsBuildTimeline).records | Select-Object type, state, identifier, id
+                $buildStage = $buildRecords.where{ $_.type -eq 'Stage' -and $_.state -eq 'pending' }
+                $approval = $buildRecords.where{ $_.type -eq 'Checkpoint.Approval' }
                 if ($buildStage.state -eq 'pending' -and -not [string]::IsNullOrEmpty($approval.id)) {
-                    $output += @{
+                    [ordered]@{
+                        id                           = $build.id
+                        approver                     = $build.requestedFor
+                        stage                        = $buildStage.identifier
+                        approvalId                   = $approval.id
+                        state                        = $buildStage.state
                         _links                       = $build._links
                         properties                   = $build.properties
                         tags                         = $build.tags
                         validationResults            = $build.validationResults
                         plans                        = $build.plans
                         buildNumber                  = $build.buildNumber
-                        id                           = $build.id
                         queueTime                    = $build.queueTime
                         startTime                    = $build.startTime
                         url                          = $build.url
@@ -44,7 +49,6 @@ function Get-AzDevOpsBuildApproval {
                         reason                       = $build.reason
                         priority                     = $build.priority
                         repository                   = $build.repository
-                        requestedFor                 = $build.requestedFor
                         requestedBy                  = $build.requestedBy
                         lastChangedDate              = $build.lastChangedDate
                         lastChangedBy                = $build.lastChangedBy
@@ -55,17 +59,10 @@ function Get-AzDevOpsBuildApproval {
                         triggerInfo                  = $build.triggerInfo
                         triggeredByBuild             = $build.triggeredByBuild
                         appendCommitMessageToRunName = $build.appendCommitMessageToRunName
-                        state                        = $buildStage.state
-                        stage                        = $buildStage.identifier
-                        approvalId                   = $approval.id
                     }
                 }
             }
-            Write-Output -InputObject $output | Select-Object `
-                stage, _links, properties, tags, validationResults, plans, triggerInfo, id, approvalId, buildNumber, state, queueTime, startTime, url, definition, project, `
-                uri, sourceBranch, sourceVersion, queue, priority, reason, requestedFor, requestedBy, lastChangedDate, lastChangedBy, orchestrationPlan, logs, repository, `
-                retainedByRelease, triggeredByBuild, appendCommitMessageToRunName `
-            | Where-Object { $_.buildNumber -imatch "^$BuildNumber$" }
+            Write-Output -InputObject $output.where{ $_.buildNumber -imatch "^$BuildNumber$" }
         }
         catch {
             throw $_
