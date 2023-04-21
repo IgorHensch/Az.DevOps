@@ -20,7 +20,8 @@ function New-AzDevOpsGitRepositorie {
         project = @{ 
             id = (Get-AzDevOpsProject -Name $Project).id
         }
-    } | ConvertTo-Json -Depth 3
+    } | ConvertTo-Json
+
     try {
         $request = [WebRequestAzureDevOpsCore]::Create($Project, $body, 'git/repositories', $script:sharedData.ApiVersion, $null, $null)
         Write-Output -InputObject $request.value 
