@@ -11,35 +11,42 @@ function Get-AzDevOpsFeedPackage {
     .EXAMPLE
         Get-AzDevOpsFeedPackage -FeedName 'FeedName' -Name 'PackageName'
     .EXAMPLE
-        Get-AzDevOpsArtifactFeed | Get-AzDevOpsFeedPackage
-    .EXAMPLE
         Get-AzDevOpsArtifactFeed -Name 'FeedName' | Get-AzDevOpsFeedPackage
+    .NOTES
+        PAT Permission Scope: vso.packaging
+        Description: Grants the ability to read feeds and packages. Also grants the ability to search packages.
     #>
-
-    [CmdletBinding(DefaultParameterSetName = 'General')]
+    [CmdletBinding(DefaultParameterSetName = 'Default')]
     param (
-        [Parameter(Mandatory = $true, ParameterSetName = 'General')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'Default')]
+        [ValidateNotNullOrEmpty()]
         [string]$FeedName,
         [string]$Name = '*',
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = 'Pipeline')]
+        [ValidateNotNullOrEmpty()]
         [PSCustomObject]$PipelineObject
     )
-    process {
+    end {
         switch ($PSCmdlet.ParameterSetName) {
-            'General' {
+            'Default' {
+                $Feed = Get-AzDevOpsArtifactFeed -Name $FeedName
                 $param = @{
-                    FeedUrl = (Get-AzDevOpsArtifactFeed -Name $FeedName).url
+                    Project = $Feed.ProjectName
+                    FeedId  = $Feed.Id
                 }
             }
             'Pipeline' {
                 $param = @{
-                    FeedUrl = $PipelineObject.url
+                    Project = $PipelineObject.ProjectName
+                    FeedId  = $PipelineObject.Id
                 }
             }
         }
         try {
-            $request = [WebRequestAzureDevOpsCore]::Get($param.FeedUrl, 'packages', $script:sharedData.ApiVersionPreview, $null) 
-            Write-Output -InputObject $request.value.where{ $_.name -imatch "^$Name$" }
+            $script:feedId = $param.FeedId
+            $script:projectName = $param.Project
+            $script:function = $MyInvocation.MyCommand.Name
+            [AzureDevOpsFeedPackage]::Get().where{ $_.name -imatch "^$Name$" }
         }
         catch {
             throw $_

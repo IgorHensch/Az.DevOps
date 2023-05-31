@@ -7,20 +7,27 @@ function Get-AzDevOpsVariableGroup {
     .EXAMPLE
         Get-AzDevOpsVariableGroup -Project 'ProjectName'
     .EXAMPLE
-        Get-AzDevOpsVariableGroup -Project 'ProjectName' -Name 'VariableGroupName'
+        Get-AzDevOpsVariableGroup -Project 'ProjectName' -VariableGroupName 'VariableGroupName'
+    .NOTES
+        PAT Permission Scope: vso.variablegroups_read
+        Description: Grants the ability to read variable groups.
     #>
-
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
         [string]$Project,
-        [string]$Name = '*'
+        [string]$VariableGroupName = '*'
     )
-    try {
-        $request = [WebRequestAzureDevOpsCore]::Get('distributedtask/variablegroups', $script:sharedData.ApiVersionPreview, $Project, $null, $null)
-        Write-Output -InputObject $request.value.where{ $_.name -imatch "^$Name$" }.foreach{ $_ | Add-Member @{ project = $Project } -PassThru }
-    }
-    catch {
-        throw $_
+    end {
+        try {
+            $script:projectName = $Project
+            $script:function = $MyInvocation.MyCommand.Name
+            [AzureDevOpsVariableGroup]::Get().where{ $_.VariableGroupName -imatch "^$VariableGroupName$" }
+            [AzureDevOpsVariableGroup]::CleanScriptVariables()
+        }
+        catch {
+            throw $_
+        }
     }
 }

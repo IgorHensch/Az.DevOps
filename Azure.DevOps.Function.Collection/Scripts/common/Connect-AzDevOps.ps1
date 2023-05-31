@@ -6,31 +6,34 @@ function Connect-AzDevOps {
         Connect to Azure DevOps with a Personal Access Token.
     .EXAMPLE
         Connect-AzDevOps -Organization 'OrganizationName' -PersonalAccessToken 'PersonalAccessToken'
+    .NOTES
+        PAT Permission Scope: vso.profile
+        Description: Grants the ability to read your profile, accounts, collections, projects, teams, and other top-level organizational artifacts.
     #>
-
     [CmdletBinding()]
     param (        
         [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
         [string]$PersonalAccessToken,
         [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
         [string]$Organization,
-        [string]$ApiVersion = '7.0',
-        [string]$ApiVersionPreview = '7.0-preview.1',
-        [string]$ApiVersion1Preview2 = '7.0-preview.2',
         [string]$CoreServer = 'dev.azure.com'
     )
-    $script:sharedData = @{
-        Header             = [Header]::new($PersonalAccessToken).Header
-        Organization       = $Organization
-        ApiVersion         = $ApiVersion
-        ApiVersionPreview  = $ApiVersionPreview
-        ApiVersionPreview2 = $ApiVersionPreview2
-        CoreServer         = $CoreServer
-    }
-    try {
-        [WebRequestAzureDevOpsCore]::Get('profile/profiles/me', $script:sharedData.ApiVersionPreview, $null, 'vssps.', $null).Value
-    }
-    catch {
-        throw $_
+    end {
+        $script:sharedData = @{
+            Header             = [Header]::new($PersonalAccessToken).Header
+            Organization       = $Organization
+            ApiVersion         = '7.0'
+            ApiVersionPreview  = '7.0-preview.1'
+            ApiVersionPreview2 = '7.0-preview.2'
+            CoreServer         = $CoreServer
+        }
+        try {
+            Get-AzDevOpsCurrentUser
+        }
+        catch {
+            throw $_
+        }
     }
 }

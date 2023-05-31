@@ -10,33 +10,43 @@ function Get-AzDevOpsBuildChange {
         Get-AzDevOpsBuildChange -Project 'ProjectName' -Id 'BuildId'
     .EXAMPLE
         Get-AzDevOpsBuild -Project 'ProjectName' -Id 'BuildId' | Get-AzDevOpsBuildChange
+    .NOTES
+        PAT Permission Scope: vso.build
+        Description: Grants the ability to access build artifacts, including build results, definitions, and requests, 
+        and the ability to receive notifications about build events via service hooks.
     #>
-
-    [CmdletBinding(DefaultParameterSetName = 'General')]
+    [CmdletBinding(DefaultParameterSetName = 'Default')]
     param (
-        [Parameter(Mandatory = $true, ParameterSetName = 'General')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'Default')]
+        [ValidateNotNullOrEmpty()]
         [string]$Project,
-        [Parameter(Mandatory = $true, ParameterSetName = 'General')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'Default')]
+        [ValidateNotNullOrEmpty()]
         [string]$Id,
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = 'Pipeline')]
+        [ValidateNotNullOrEmpty()]
         [PSCustomObject]$PipelineObject
     )
-    process {
+    end {
         switch ($PSCmdlet.ParameterSetName) {
-            'General' {
+            'Default' {
                 $param = @{
-                    BuildUrl = (Get-AzDevOpsBuild -Project $Project -Id $Id).url
+                    Project = $Project
+                    BuildId = $Id
                 }
             }
             'Pipeline' {
                 $param = @{
-                    BuildUrl = $PipelineObject.url
+                    Project = $PipelineObject.ProjectName
+                    BuildId = $PipelineObject.Id
                 }
             }
         }
         try {
-            $request = [WebRequestAzureDevOpsCore]::Get($param.BuildUrl, 'changes', "$($script:sharedData.ApiVersion)&includeSourceChange=true", $null) 
-            Write-Output -InputObject $request.value
+            $script:buildId = $param.BuildId
+            $script:projectName = $param.Project
+            $script:function = $MyInvocation.MyCommand.Name
+            [AzureDevOpsBuildChange]::Get()
         }
         catch {
             throw $_

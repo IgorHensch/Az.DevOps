@@ -8,17 +8,21 @@ function Get-AzDevOpsTeam {
         Get-AzDevOpsTeam
     .EXAMPLE
         Get-AzDevOpsTeam -Name 'TeamName'
+    .NOTES
+        PAT Permission Scope: vso.project
+        Description: Grants the ability to read projects and teams.
     #>
-
     [CmdletBinding()]
     param (
         [string]$Name = '*'
     )
-    try {
-        $request = [WebRequestAzureDevOpsCore]::Get('teams', $script:sharedData.ApiVersionPreview2, $null, $null, '$mine=false&$top=100&$skip&')
-        Write-Output -InputObject $request.value.where{ $_.name -imatch "^$Name$" } 
-    }
-    catch {
-        throw $_
+    end {
+        try {
+            $script:function = $MyInvocation.MyCommand.Name
+            [AzureDevOpsTeam]::Get().where{ $_.name -imatch "^$Name$" }
+        }
+        catch {
+            throw $_
+        }
     }
 }

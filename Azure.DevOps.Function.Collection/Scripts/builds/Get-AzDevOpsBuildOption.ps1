@@ -8,19 +8,26 @@ function Get-AzDevOpsBuildOption {
         Get-AzDevOpsBuildOption -Project 'ProjectName'
     .EXAMPLE
         Get-AzDevOpsBuildOption -Project 'ProjectName' -Name 'OptionName'
+    .NOTES
+        PAT Permission Scope: vso.build
+        Description: Grants the ability to access build artifacts, including build results, definitions, and requests, 
+        and the ability to receive notifications about build events via service hooks.
     #>
-
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
         [string]$Project,
         [string]$Name = '*'
     )
-    try {
-        $request = [WebRequestAzureDevOpsCore]::Get('build/options', $script:sharedData.ApiVersion, $Project, $null, $null)
-        Write-Output -InputObject $request.value.where{ $_.name -imatch "^$Name$" }
-    }
-    catch {
-        throw $_
+    end {
+        try {
+            $script:projectName = $Project
+            $script:function = $MyInvocation.MyCommand.Name
+            [AzureDevOpsBuildOptions]::Get().where{ $_.name -imatch "^$Name$" }
+        }
+        catch {
+            throw $_
+        }
     }
 }
