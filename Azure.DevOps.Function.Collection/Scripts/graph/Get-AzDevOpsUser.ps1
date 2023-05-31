@@ -8,17 +8,21 @@ function Get-AzDevOpsUser {
         Get-AzDevOpsUser
     .EXAMPLE
         Get-AzDevOpsUser -PrincipalName 'PrincipalName'
+    .NOTES
+        PAT Permission Scope: vso.graph
+        Description: Grants the ability to read user, group, scope and group membership information.
     #>
-
     [CmdletBinding()]
     param (
         [string]$PrincipalName = '*'
     )
-    try {
-        $request = [WebRequestAzureDevOpsCore]::Get('graph/users', $script:sharedData.ApiVersionPreview, $null, 'vssps.', $null)
-        Write-Output -InputObject $request.value.where{ $_.principalName -imatch "^$PrincipalName$" }
-    }
-    catch {
-        throw $_
+    end {
+        try {
+            $script:function = $MyInvocation.MyCommand.Name
+            [AzureDevOpsUserGroup]::Get().where{ $_.PrincipalName -imatch "^$PrincipalName$" }
+        }
+        catch {
+            throw $_
+        }
     }
 }

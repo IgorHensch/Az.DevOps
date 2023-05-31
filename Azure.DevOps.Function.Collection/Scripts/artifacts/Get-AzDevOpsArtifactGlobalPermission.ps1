@@ -8,17 +8,21 @@ function Get-AzDevOpsArtifactGlobalPermission {
         Get-AzDevOpsArtifactGlobalPermission
     .EXAMPLE
         Get-AzDevOpsArtifactGlobalPermission -Role 'administrator'
+    .NOTES
+        PAT Permission Scope: vso.packaging
+        Description: Grants the ability to read feeds and packages. Also grants the ability to search packages.
     #>
-    
     [CmdletBinding()]
     param (
         [string]$Role = '*'
     )
-    try {
-        $request = [WebRequestAzureDevOpsCore]::Get('packaging/globalpermissions', $script:sharedData.ApiVersionPreview, $Project, 'feeds.', $null)
-        Write-Output -InputObject $request.value.where{ $_.role -imatch "^$Role$" }
-    }
-    catch {
-        throw $_
+    end {
+        try {
+            $script:function = $MyInvocation.MyCommand.Name
+            [AzureDevOpsArtifactGlobalPermission]::Get().where{ $_.role -imatch "^$Role$" }
+        }
+        catch {
+            throw $_
+        }
     }
 }

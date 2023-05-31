@@ -10,33 +10,43 @@ function Get-AzDevOpsBuildLease {
         Get-AzDevOpsBuildLease -Project 'ProjectName' -BuildId 'BuildId'
     .EXAMPLE
         Get-AzDevOpsBuild -Project 'ProjectName' -Id 'BuildId' | Get-AzDevOpsBuildLease
+    .NOTES
+        PAT Permission Scope: vso.build
+        Description: Grants the ability to access build artifacts, including build results, definitions, and requests, 
+        and the ability to receive notifications about build events via service hooks.
     #>
-
-    [CmdletBinding(DefaultParameterSetName = 'General')]
+    [CmdletBinding(DefaultParameterSetName = 'Default')]
     param (
-        [Parameter(Mandatory = $true, ParameterSetName = 'General')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'Default')]
+        [ValidateNotNullOrEmpty()]
         [string]$Project,
-        [Parameter(Mandatory = $true, ParameterSetName = 'General')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'Default')]
+        [ValidateNotNullOrEmpty()]
         [string]$BuildId,
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = 'Pipeline')]
+        [ValidateNotNullOrEmpty()]
         [PSCustomObject]$PipelineObject
     )
-    process {
+    end {
         switch ($PSCmdlet.ParameterSetName) {
-            'General' {
+            'Default' {
                 $param = @{
-                    BuildLeasesUrl = (Get-AzDevOpsBuild -Project $Project -Id $BuildId).url
+                    Project = $Project
+                    BuildId = $BuildId
                 }
             }
             'Pipeline' {
                 $param = @{
-                    BuildLeasesUrl = $PipelineObject.url
+                    Project = $PipelineObject.ProjectName
+                    BuildId = $PipelineObject.Id
                 }
             }
         }
         try {
-            $request = [WebRequestAzureDevOpsCore]::Get($param.BuildLeasesUrl, 'leases', $script:sharedData.ApiVersion, $null) 
-            Write-Output -InputObject $request.value
+            $script:buildId = $param.BuildId
+            $script:projectName = $param.Project
+            $script:function = $MyInvocation.MyCommand.Name
+            [AzureDevOpsBuildLease]::Get()
         }
         catch {
             throw $_

@@ -12,19 +12,23 @@ function Remove-AzDevOpsRecycleBinFeed {
         Remove-AzDevOpsRecycleBinFeed -FeedName 'FeedName' -Force
     .EXAMPLE
         Get-AzDevOpsRecycleBinFeed -Name 'FeedName' | Remove-AzDevOpsRecycleBinFeed
+    .NOTES
+        PAT Permission Scope: vso.packaging_manage
+        Description: Grants the ability to create, read, update, and delete feeds and packages.
     #>
-
-    [CmdletBinding(DefaultParameterSetName = 'General')]
+    [CmdletBinding(DefaultParameterSetName = 'Default')]
     param (
-        [Parameter(Mandatory = $true, ParameterSetName = 'General')]  
+        [Parameter(Mandatory = $true, ParameterSetName = 'Default')]
+        [ValidateNotNullOrEmpty()]
         [string]$FeedName,
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = 'Pipeline')]
+        [ValidateNotNullOrEmpty()]
         [PSCustomObject]$PipelineObject,
         [switch]$Force
     )
     process {
         switch ($PSCmdlet.ParameterSetName) {
-            'General' {
+            'Default' {
                 $param = @{
                     FeedName = $FeedName
                 }
@@ -35,10 +39,12 @@ function Remove-AzDevOpsRecycleBinFeed {
                 }
             }
         }
-        $feed = Get-AzDevOpsRecycleBinFeed -Name $param.FeedName
         try {
-            $feed
-            [WebRequestAzureDevOpsCore]::Delete($feed, "packaging/feedrecyclebin/$($feed.id)", $null, $Force, $script:sharedData.ApiVersionPreview, 'feeds.').Value
+            Write-Output ($feed = Get-AzDevOpsRecycleBinFeed -Name $param.FeedName)
+            $script:projectName = $feed.ProjectName
+            $script:feedId = $feed.Id
+            $script:function = $MyInvocation.MyCommand.Name
+            [AzureDevOps]::DeleteRequest($feed, $Force)
         }
         catch {
             throw $_

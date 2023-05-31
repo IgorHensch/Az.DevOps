@@ -7,36 +7,44 @@ function New-AzDevOpsProject {
     .EXAMPLE
         New-AzDevOpsProject -Name 'ProjectName'
     .EXAMPLE
-        New-AzDevOpsProject -Name 'ProjectName' -Description 'Description' -Visibility 'private' -SourceControlType 'Git' -TemplateTypeId '6b724908-ef14-45cf-84f8-768b5384da45'
+        New-AzDevOpsProject -Name 'ProjectName' -Description 'Description' -Visibility 'private' -SourceControlType 'Git' -ProcessTemplate 'Scrum'
+    .NOTES
+        PAT Permission Scope: vso.project_manage
+        Description: Grants the ability to create, read, update, and delete projects and teams.
     #>
-    
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
         [string]$Name,
         [string]$Description,
+        [ValidateSet('private', 'public')]
         [string]$Visibility = 'private',
+        [ValidateSet('Git', 'Tfvc')]
         [string]$SourceControlType = 'Git',
-        [string]$TemplateTypeId = '6b724908-ef14-45cf-84f8-768b5384da45'
+        [ValidateSet('Agile', 'Basic', 'CMMI', 'Scrum')]
+        [string]$ProcessTemplate = 'Scrum'
     )
-    $body = @{
-        name         = $Name
-        description  = $Description
-        visibility   = $Visibility
-        capabilities = @{
-            versioncontrol  = @{
-                sourceControlType = $SourceControlType
-            }
-            processTemplate = @{
-                templateTypeId = $TemplateTypeId
-            }
+    end {
+        try {
+            $script:body = @{
+                name         = $Name
+                description  = $Description
+                visibility   = $Visibility
+                capabilities = @{
+                    versioncontrol  = @{
+                        sourceControlType = $SourceControlType
+                    }
+                    processTemplate = @{
+                        templateTypeId = [AzureDevOpsProcessTemplate]::GetTemplateTypeId($ProcessTemplate)
+                    }
+                }
+            } | ConvertTo-Json -Depth 2
+            $script:function = $MyInvocation.MyCommand.Name
+            [AzureDevOpsProject]::Create()
         }
-    } | ConvertTo-Json -Depth 4
-    try {
-        $request = [WebRequestAzureDevOpsCore]::Create($null, $body, 'projects', $script:sharedData.ApiVersion, $null, $null)
-        Write-Output -InputObject $request.value 
-    }
-    catch {
-        throw $_
+        catch {
+            throw $_
+        }
     }
 }

@@ -11,40 +11,49 @@ function Get-AzDevOpsRecycleBinFeedPackageVersion {
     .EXAMPLE
         Get-AzDevOpsRecycleBinFeedPackageVersion -FeedName 'FeedName' -PackageName 'PackageName' -Version 'PackageVersion'
     .EXAMPLE
-        Get-AzDevOpsRecycleBinFeedPackage -FeedName 'FeedName' | Get-AzDevOpsRecycleBinFeedPackageVersion'
-    .EXAMPLE
         Get-AzDevOpsRecycleBinFeedPackage -FeedName 'FeedName' -Name 'PackageName' | Get-AzDevOpsRecycleBinFeedPackageVersion
+    .NOTES
+        PAT Permission Scope: vso.packaging
+        Description: Grants the ability to read feeds and packages. Also grants the ability to search packages.
     #>
-
-    [CmdletBinding(DefaultParameterSetName = 'General')]
+    [CmdletBinding(DefaultParameterSetName = 'Default')]
     param (
-        [Parameter(Mandatory = $true, ParameterSetName = 'General')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'Default')]
+        [ValidateNotNullOrEmpty()]
         [string]$PackageName,
-        [Parameter(Mandatory = $true, ParameterSetName = 'General')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'Default')]
+        [ValidateNotNullOrEmpty()]
         [string]$FeedName,
         [string]$Version = '*',
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = 'Pipeline')]
+        [ValidateNotNullOrEmpty()]
         [PSCustomObject]$PipelineObject
         
     )
-    process {
+    end {
         switch ($PSCmdlet.ParameterSetName) {
-            'General' {
+            'Default' {
+                $recycleBinFeedPackage = Get-AzDevOpsRecycleBinFeedPackage -FeedName $FeedName -name $PackageName
                 $param = @{
-                    RecycleBinFeedPackageUrl = (Get-AzDevOpsRecycleBinFeedPackage -FeedName $FeedName -name $PackageName).url
-                    PackageName              = $PackageName
+                    PackageId = $recycleBinFeedPackage.Id
+                    Project   = $recycleBinFeedPackage.ProjectName
+                    FeedId    = $recycleBinFeedPackage.FeedId
                 }
             }
             'Pipeline' {
                 $param = @{
-                    RecycleBinFeedPackageUrl = $PipelineObject.url
-                    PackageName              = $PipelineObject.name
+                    PackageId = $PipelineObject.Id
+                    Project   = $PipelineObject.ProjectName
+                    FeedId    = $PipelineObject.FeedId
                 }
             }
         }
         try {
-            $request = [WebRequestAzureDevOpsCore]::Get($param.RecycleBinFeedPackageUrl, 'Versions', $script:sharedData.ApiVersionPreview, $null)
-            Write-Output -InputObject $request.value.where{ $_.name -imatch "^$Version$" }
+            $script:feedId = $param.FeedId
+            $script:projectName = $param.Project
+            $script:packageId = $param.PackageId
+            $script:function = $MyInvocation.MyCommand.Name
+            [AzureDevOpsRecycleBinFeedPackageVersion]::Get().where{ $_.Version -imatch "^$Version$" }
         }
         catch {
             throw $_

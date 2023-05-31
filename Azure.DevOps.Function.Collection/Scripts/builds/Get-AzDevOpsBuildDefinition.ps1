@@ -1,26 +1,55 @@
 function Get-AzDevOpsBuildDefinition {
     <#
     .SYNOPSIS
-        Gets Azure DevOps Build Definitions.
+        Gets Azure DevOps Build Definition Details.
     .DESCRIPTION
-        Gets Build Definition from Azure Devops Pipelines.
+        Gets Details from Azure Devops Pipelines Build Definition.
+    .LINK
+        Get-AzDevOpsBuildDefinitionList
     .EXAMPLE
-        Get-AzDevOpsBuildDefinition -Project 'ProjectName'
+        Get-AzDevOpsBuildDefinition -Project 'ProjectName' -DefinitionName 'BuildDefinitionName'
     .EXAMPLE
-        Get-AzDevOpsBuildDefinition -Project 'ProjectName' -Name 'BuildDefinitionName'
+        Get-AzDevOpsBuildDefinitionList -Project 'ProjectName' -Name 'BuildDefinitionName' | Get-AzDevOpsBuildDefinition
+    .NOTES
+        PAT Permission Scope: vso.build
+        Description: Grants the ability to access build artifacts, including build results, definitions, and requests, 
+        and the ability to receive notifications about build events via service hooks.
     #>
-
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName = 'Default')]
     param (
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true, ParameterSetName = 'Default')]
+        [ValidateNotNullOrEmpty()]
         [string]$Project,
-        [string]$Name = '*'
+        [Parameter(Mandatory = $true, ParameterSetName = 'Default')]
+        [ValidateNotNullOrEmpty()]
+        [string]$DefinitionName,
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = 'Pipeline')]
+        [ValidateNotNullOrEmpty()]
+        [PSCustomObject]$PipelineObject
     )
-    try {
-        $request = [WebRequestAzureDevOpsCore]::Get('build/definitions', $script:sharedData.ApiVersion, $Project, $null, $null)
-        Write-Output -InputObject $request.value.where{ $_.name -imatch "^$Name$" }
-    }
-    catch {
-        throw $_
+    end {
+        switch ($PSCmdlet.ParameterSetName) {
+            'Default' {
+                $param = @{
+                    Project           = $Project
+                    BuildDefinitionId = (Get-AzDevOpsBuildDefinitionList -Project $Project -Name $DefinitionName).Id
+                }
+            }
+            'Pipeline' {
+                $param = @{
+                    Project           = $PipelineObject.ProjectName
+                    BuildDefinitionId = $PipelineObject.Id
+                }
+            }
+        }
+        try {
+            $script:buildDefinitionId = $param.BuildDefinitionId
+            $script:projectName = $param.Project
+            $script:function = $MyInvocation.MyCommand.Name
+            [AzureDevOpsBuildDefinition]::Get()
+        }
+        catch {
+            throw $_
+        }
     }
 }

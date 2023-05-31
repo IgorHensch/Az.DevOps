@@ -1,4 +1,7 @@
 {
   "editor.formatOnSave": true,
-  "editor.defaultFormatter": "ms-vscode.powershell"
+  "editor.defaultFormatter": "ms-vscode.powershell",
+  "json.schemas": [
+    
+  ]
 }

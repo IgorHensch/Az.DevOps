@@ -8,19 +8,32 @@ function Get-AzDevOpsBuild {
         Get-AzDevOpsBuild -Project 'ProjectName'
     .EXAMPLE
         Get-AzDevOpsBuild -Project 'ProjectName' -Id 'BuildId'
+    .NOTES
+        PAT Permission Scope: vso.build
+        Description: Grants the ability to access build artifacts, including build results, definitions, and requests, 
+        and the ability to receive notifications about build events via service hooks.
     #>
-
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
         [string]$Project,
+        [switch]$IsPending,
         [string]$Id = '*'
     )
-    try {
-        $request = [WebRequestAzureDevOpsCore]::Get('build/builds', $script:sharedData.ApiVersion, $Project, $null, $null)
-        Write-Output -InputObject $request.value.where{ $_.id -imatch "^$Id$" }
-    }
-    catch {
-        throw $_
+    end {
+        try {
+            $script:projectName = $Project
+            if ($IsPending) {
+                [AzureDevOpsBuild]::GetPending().where{ $_.id -imatch "^$Id$" }
+            }
+            else {
+                $script:function = $MyInvocation.MyCommand.Name
+                [AzureDevOpsBuild]::Get().where{ $_.id -imatch "^$Id$" }
+            }
+        }
+        catch {
+            throw $_
+        }
     }
 }

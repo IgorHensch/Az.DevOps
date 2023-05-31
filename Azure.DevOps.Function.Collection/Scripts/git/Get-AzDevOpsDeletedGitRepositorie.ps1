@@ -7,20 +7,30 @@ function Get-AzDevOpsDeletedGitRepositorie {
     .EXAMPLE
         Get-AzDevOpsDeletedGitRepositorie -Project 'ProjectName'
     .EXAMPLE
+        Get-AzDevOpsDeletedGitRepositorie -Project 'ProjectName' -IsSoftDeleted
+    .EXAMPLE
         Get-AzDevOpsDeletedGitRepositorie -Project 'ProjectName' -Name 'RepositorieName'
+    .NOTES
+        PAT Permission Scope: vso.code
+        Description: Grants the ability to read source code and metadata about commits, changesets, branches, and other version control artifacts.
+        Also grants the ability to search code and get notified about version control events via service hooks.
     #>
-
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
         [string]$Project,
-        [string]$Name = '*'
+        [string]$Name = '*',
+        [switch]$IsSoftDeleted
     )
-    try {
-        $request = [WebRequestAzureDevOpsCore]::Get('git/deletedrepositories', $script:sharedData.ApiVersionPreview, $Project, $null, $null)
-        Write-Output -InputObject $request.value.where{ $_.name -imatch "^$Name$" } 
-    }
-    catch {
-        throw $_
+    end {
+        try {
+            $script:function = $MyInvocation.MyCommand.Name
+            $script:projectName = $Project
+            [AzureDevOpsGitDeletedRepositorie]::Get($IsSoftDeleted).where{ $_.name -imatch "^$Name$" }
+        }
+        catch {
+            throw $_
+        }
     }
 }

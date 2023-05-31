@@ -13,20 +13,22 @@ function Approve-AzDevOpsPipeline {
     .EXAMPLE
         Get-AzDevOpsPipelineApproval -Project 'ProjectName' -BuildNumber 'BuildNumber' | Approve-AzDevOpsPipeline
     #>
-
-    [CmdletBinding(DefaultParameterSetName = 'General')]
+    [CmdletBinding(DefaultParameterSetName = 'Default')]
     param (
-        [Parameter(Mandatory = $true, ParameterSetName = 'General')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'Default')]
+        [ValidateNotNullOrEmpty()]
         [array]$ApprovalId,
-        [Parameter(Mandatory = $true, ParameterSetName = 'General')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'Default')]
+        [ValidateNotNullOrEmpty()]
         [string]$Project,
         [string]$Comment,
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = 'Pipeline')]
+        [ValidateNotNullOrEmpty()]
         [PSCustomObject]$PipelineObject
     )
     process {
         switch ($PSCmdlet.ParameterSetName) {
-            'General' {
+            'Default' {
                 $param = @{
                     ApprovalId = $ApprovalId
                     Project    = $Project
@@ -34,18 +36,20 @@ function Approve-AzDevOpsPipeline {
             }
             'Pipeline' {
                 $param = @{
-                    ApprovalId = $PipelineObject.approvalId
-                    Project    = $PipelineObject.project.name
+                    ApprovalId = $PipelineObject.ApprovalId
+                    Project    = $PipelineObject.ProjectName
                 }
             }
         }
-        $body = @{
-            approvalId = $param.ApprovalId
-            status     = 4
-            comment    = $Comment
-        } | ConvertTo-Json -Depth 2 -AsArray
         try {
-            [WebRequestAzureDevOpsCore]::Update('pipelines/approvals', $body, 'application/json', $param.Project, $script:sharedData.ApiVersionPreview, $null, $null)
+            $script:body = @{
+                approvalId = $param.ApprovalId
+                status     = 4
+                comment    = $Comment
+            } | ConvertTo-Json -Depth 2 -AsArray
+            $script:function = $MyInvocation.MyCommand.Name
+            $script:projectName = $param.Project
+            [AzureDevOps]::InvokeRequest()
         }
         catch {
             throw $_

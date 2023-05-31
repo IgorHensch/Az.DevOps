@@ -14,21 +14,26 @@ function Remove-AzDevOpsVariableGroup {
         Get-AzDevOpsVariableGroup -Project 'ProjectName' -Name 'VariableGroupName' | Remove-AzDevOpsVariableGroup
     .EXAMPLE
         Get-AzDevOpsVariableGroup -Project 'ProjectName' | Remove-AzDevOpsVariableGroup
+    .NOTES
+        PAT Permission Scope: vso.variablegroups_manage
+        Description: Grants the ability to read, create and manage variable groups.
     #>
-
-    [CmdletBinding(DefaultParameterSetName = 'General')]
+    [CmdletBinding(DefaultParameterSetName = 'Default')]
     param (
-        [Parameter(Mandatory = $true, ParameterSetName = 'General')]  
+        [Parameter(Mandatory = $true, ParameterSetName = 'Default')]
+        [ValidateNotNullOrEmpty()] 
         [string]$Project,
-        [Parameter(Mandatory = $true, ParameterSetName = 'General')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'Default')]
+        [ValidateNotNullOrEmpty()]
         [string]$Name,
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = 'Pipeline', ValueFromRemainingArguments)]
+        [ValidateNotNullOrEmpty()]
         $PipelineObject,
         [switch]$Force
     )
     process {
         switch ($PSCmdlet.ParameterSetName) {
-            'General' {
+            'Default' {
                 $param = @{
                     Project         = $Project
                     VariableGroupId = $Name
@@ -36,16 +41,17 @@ function Remove-AzDevOpsVariableGroup {
             }
             'Pipeline' {
                 $param = @{
-                    Project = $PipelineObject.project
-                    Name    = $PipelineObject.name
+                    Project = $PipelineObject.Project
+                    Name    = $PipelineObject.VariableGroupName
                 }
             }
         }
         try {
-            $variableGroup = Get-AzDevOpsVariableGroup -Project $param.Project -Name $param.Name
-            $variableGroup | Add-Member @{ url = [AzureDevOpsCoreUri]::new("distributedtask/variablegroups/$($variableGroup.id)", $param.Project, $null, $null, $null).Uri -replace '(.+)\?.+', '$1' }
-            $variableGroup
-            [WebRequestAzureDevOpsCore]::Delete($variableGroup, $Force, $($script:sharedData.ApiVersionPreview)).Value
+            Write-Output ($variableGroup = Get-AzDevOpsVariableGroup -Project $param.Project -VariableGroupName $param.Name)
+            $script:projectName = $param.Project
+            $script:variableGroupId = $VariableGroup.VariableGroupId
+            $script:function = $MyInvocation.MyCommand.Name
+            [AzureDevOps]::DeleteRequest($variableGroup, $Force)
         }
         catch {
             throw $_
