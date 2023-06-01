@@ -19,11 +19,14 @@ function New-AzDevOpsArtifactFeed {
                                     -BadgesEnabled $true `
                                     -UpstreamEnabled $true `
                                     -UpstreamSources { @{ id = "40cea34f-c6ef-4898-b379-626926723a16"; name = "npmjs"; protocol = "npm"; location = "https://registry.npmjs.org/"; upstreamSourceType = "public"}, @{ id = "2a28a64e-8822-4bf7-bc7b-5f1475178b36"; name = "nuget.org"; protocol = "nuget"; location = "https://api.nuget.org/v3/index.json"; upstreamSourceType = "public"} }
+    .NOTES
+        PAT Permission Scope: vso.packaging_write
+        Description: Grants the ability to create and read feeds and packages.
     #>
-
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
         [string]$Name,
         [string]$Project,
         [string]$Description,
@@ -48,21 +51,24 @@ function New-AzDevOpsArtifactFeed {
             }
         }
     )
-    $body = @{
-        description                = $Description
-        hideDeletedPackageVersions = $HideDeletedPackageVersions
-        badgesEnabled              = $BadgesEnabled
-        name                       = $Name
-        upstreamEnabled            = $UpstreamEnabled
-        fullyQualifiedName         = $Name
-        upstreamSources            = $UpstreamSources
-        capabilities               = $Capabilities
-    } | ConvertTo-Json
-    try {
-        $request = [WebRequestAzureDevOpsCore]::Create($Project, $body, 'packaging/feeds', $script:sharedData.ApiVersion, 'feeds.', $null)
-        Write-Output -InputObject $request.value 
-    }
-    catch {
-        throw $_
+    end {
+        try {
+            $script:body = @{
+                description                = $Description
+                hideDeletedPackageVersions = $HideDeletedPackageVersions
+                badgesEnabled              = $BadgesEnabled
+                name                       = $Name
+                upstreamEnabled            = $UpstreamEnabled
+                fullyQualifiedName         = $Name
+                upstreamSources            = $UpstreamSources
+                capabilities               = $Capabilities
+            } | ConvertTo-Json -Depth 2
+            $script:function = $MyInvocation.MyCommand.Name
+            $script:projectName = $Project
+            [AzureDevOpsArtifactFeed]::Create()
+        }
+        catch {
+            throw $_
+        }
     }
 }

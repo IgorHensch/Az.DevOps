@@ -8,19 +8,26 @@ function Get-AzDevOpsReleaseApproval {
         Get-AzDevOpsReleaseApproval -Project 'ProjectName'
     .EXAMPLE
         Get-AzDevOpsReleaseApproval -Project 'ProjectName' -Id 'ApprovalId'
+    .NOTES
+        PAT Permission Scope: vso.release
+        Description: Grants the ability to read release artifacts, including folders, releases, release definitions and release environment.
     #>
-
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
         [string]$Project,
         [string]$Id = '*'
     )
-    try {
-        $request = [WebRequestAzureDevOpsCore]::Get('release/approvals', $script:sharedData.ApiVersionPreview, $Project, 'vsrm.', $null)
-        Write-Output -InputObject $request.value.where{ $_.id -imatch "^$Id$" }.foreach{ $_ | Add-Member @{project = $Project } -PassThru }
-    }
-    catch {
-        throw $_
+    end {
+        try {
+            $script:function = $MyInvocation.MyCommand.Name
+            $script:projectName = $Project
+            [AzureDevOpsReleaseApproval]::Get().where{ $_.Id -imatch "^$Id$" } 
+            [AzureDevOpsReleaseApproval]::CleanScriptVariables()
+        }
+        catch {
+            throw $_
+        }
     }
 }

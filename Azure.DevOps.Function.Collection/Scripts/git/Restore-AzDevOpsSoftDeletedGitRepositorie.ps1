@@ -10,20 +10,27 @@ function Restore-AzDevOpsSoftDeletedGitRepositorie {
         Restore-AzDevOpsSoftDeletedGitRepositorie -Project 'ProjectName' -RepositoryId 'RepositoryId'
     .EXAMPLE
         Get-AzDevOpsSoftDeletedGitRepositorie -Project 'ProjectName' -Name 'RepositorieName' | Restore-AzDevOpsSoftDeletedGitRepositorie
+    .NOTES
+        PAT Permission Scope: vso.code_manage
+        Description: Grants the ability to read, update, and delete source code, access metadata about commits, changesets, branches, and other version control artifacts.
+        Also grants the ability to create and manage code repositories, create and manage pull requests and code reviews, and to receive notifications about version control
+        events via service hooks.
     #>
-
-    [CmdletBinding(DefaultParameterSetName = 'General')]
+    [CmdletBinding(DefaultParameterSetName = 'Default')]
     param (
-        [Parameter(Mandatory = $true, ParameterSetName = 'General')]  
+        [Parameter(Mandatory = $true, ParameterSetName = 'Default')]
+        [ValidateNotNullOrEmpty()]
         [string]$Project,
-        [Parameter(Mandatory = $true, ParameterSetName = 'General')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'Default')]
+        [ValidateNotNullOrEmpty()]
         [string]$RepositoryId,
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = 'Pipeline')]
+        [ValidateNotNullOrEmpty()]
         [PSCustomObject]$PipelineObject
     )
     end {
         switch ($PSCmdlet.ParameterSetName) {
-            'General' {
+            'Default' {
                 $param = @{
                     Project      = $Project
                     RepositoryId = $RepositoryId
@@ -31,16 +38,19 @@ function Restore-AzDevOpsSoftDeletedGitRepositorie {
             }
             'Pipeline' {
                 $param = @{
-                    Project      = $PipelineObject.project.name
-                    RepositoryId = $PipelineObject.id
+                    Project      = $PipelineObject.Project
+                    RepositoryId = $PipelineObject.Id
                 }
             }
         }
-        $body = @{
-            deleted = 'false'
-        } | ConvertTo-Json -Depth 2
         try {
-            [WebRequestAzureDevOpsCore]::Update("git/recycleBin/repositories/$($param.RepositoryId)", $body, 'application/json', $param.Project, $script:sharedData.ApiVersion, $null, $null)
+            $script:body = @{
+                deleted = 'false'
+            } | ConvertTo-Json -Depth 2
+            $script:projectName = $param.Project
+            $script:deletedRepositoryId = $param.RepositoryId
+            $script:function = $MyInvocation.MyCommand.Name
+            [AzureDevOps]::InvokeRequest()
         }
         catch {
             throw $_

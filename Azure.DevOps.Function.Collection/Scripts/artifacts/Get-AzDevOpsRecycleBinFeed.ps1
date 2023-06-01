@@ -12,18 +12,23 @@ function Get-AzDevOpsRecycleBinFeed {
         Get-AzDevOpsRecycleBinFeed -Name 'FeedName'
     .EXAMPLE
         Get-AzDevOpsRecycleBinFeed -Project 'ProjectName' -Name 'FeedName'
+    .NOTES
+        PAT Permission Scope: vso.packaging
+        Description: Grants the ability to read feeds and packages. Also grants the ability to search packages.
     #>
-
     [CmdletBinding()]
     param (
         [string]$Project,
         [string]$Name = '*'
     )
-    try {
-        $request = [WebRequestAzureDevOpsCore]::Get('packaging/feedrecyclebin', $script:sharedData.ApiVersionPreview, $Project, 'feeds.', $null)
-        Write-Output -InputObject $request.value.where{ $_.name -imatch "^$Name$" }
-    }
-    catch {
-        throw $_
+    end {
+        try {
+            $script:projectName = $Project
+            $script:function = $MyInvocation.MyCommand.Name
+            [AzureDevOpsRecycleBinFeed]::Get().where{ $_.name -imatch "^$Name$" }
+        }
+        catch {
+            throw $_
+        }
     }
 }

@@ -13,20 +13,22 @@ function Get-AzDevOpsPipelineRun {
     .EXAMPLE
         Get-AzDevOpsPipeline -Project 'Project' -Name 'PipelineName' | Get-AzDevOpsPipelineRun
     #>
-
-    [CmdletBinding(DefaultParameterSetName = 'General')]
+    [CmdletBinding(DefaultParameterSetName = 'Default')]
     param (
-        [Parameter(Mandatory = $true, ParameterSetName = 'General')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'Default')]
+        [ValidateNotNullOrEmpty()]
         [string]$Project,
-        [Parameter(Mandatory = $true, ParameterSetName = 'General')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'Default')]
+        [ValidateNotNullOrEmpty()]
         [string]$PipelineName,
         [string]$Name = '*',
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = 'Pipeline')]
+        [ValidateNotNullOrEmpty()]
         [PSCustomObject]$PipelineObject
     )
-    process {
+    end {
         switch ($PSCmdlet.ParameterSetName) {
-            'General' {
+            'Default' {
                 $param = @{
                     Project    = $Project
                     PipelineId = (Get-AzDevOpsPipeline -Project $Project -Name $PipelineName).id
@@ -40,8 +42,10 @@ function Get-AzDevOpsPipelineRun {
             }
         }
         try {
-            $request = [WebRequestAzureDevOpsCore]::Get("pipelines/$($param.PipelineId)/runs", $script:sharedData.ApiVersion, $param.Project, $null, $null)
-            Write-Output -InputObject $request.value.where{ $_.name -imatch "^$Name$" } 
+            $script:projectName = $param.Project
+            $script:pipelineId = $param.PipelineId
+            $script:function = $MyInvocation.MyCommand.Name
+            [AzureDevOpsPipelineRun]::Get().where{ $_.name -imatch "^$Name$" }  
         }
         catch {
             throw $_

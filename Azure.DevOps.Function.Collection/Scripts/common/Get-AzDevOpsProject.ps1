@@ -8,17 +8,21 @@ function Get-AzDevOpsProject {
         Get-AzDevOpsProject
     .EXAMPLE
         Get-AzDevOpsProject -Name 'ProjectName'
+    .NOTES
+        PAT Permission Scope: vso.profile, vso.project
+        Description: Grants the ability to read your profile, accounts, collections, projects, teams, and other top-level organizational artifacts.
     #>
-
     [CmdletBinding()]
     param (
         [string]$Name = '*'
     )
-    try {
-        $request = [WebRequestAzureDevOpsCore]::Get('projects', $script:sharedData.ApiVersionPreview, $null, $null, $null)
-        Write-Output -InputObject $request.value.where{ $_.name -imatch "^$Name$" } 
-    }
-    catch {
-        throw $_
+    end {
+        try {
+            $script:function = $MyInvocation.MyCommand.Name
+            [AzureDevOpsProject]::Get().where{ $_.Name -imatch "^$Name$" } 
+        }
+        catch {
+            throw $_
+        }
     }
 }

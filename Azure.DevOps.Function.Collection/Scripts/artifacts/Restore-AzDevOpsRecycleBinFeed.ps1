@@ -12,19 +12,23 @@ function Restore-AzDevOpsRecycleBinFeed {
         Restore-AzDevOpsRecycleBinFeed -FeedName 'FeedName' -Force
     .EXAMPLE
         Get-AzDevOpsRecycleBinFeed -Name 'FeedName' | Restore-AzDevOpsRecycleBinFeed
+    .NOTES
+        PAT Permission Scope: vso.packaging_manage
+        Description: Grants the ability to create, read, update, and delete feeds and packages.
     #>
-
-    [CmdletBinding(DefaultParameterSetName = 'General')]
+    [CmdletBinding(DefaultParameterSetName = 'Default')]
     param (
         [string]$Project,
-        [Parameter(Mandatory = $true, ParameterSetName = 'General')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'Default')]
+        [ValidateNotNullOrEmpty()]
         [string]$FeedName,
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = 'Pipeline')]
+        [ValidateNotNullOrEmpty()]
         [PSCustomObject]$PipelineObject
     )
     process {
         switch ($PSCmdlet.ParameterSetName) {
-            'General' {
+            'Default' {
                 $param = @{
                     FeedName = $FeedName
                 }
@@ -35,14 +39,17 @@ function Restore-AzDevOpsRecycleBinFeed {
                 }
             }
         }
-        $feed = Get-AzDevOpsRecycleBinFeed -Name $param.FeedName
-        $body = @{
-            op    = 'replace'
-            path  = '/isDeleted'
-            value = $false
-        } | ConvertTo-Json -Depth 2 -AsArray
         try {
-            [WebRequestAzureDevOpsCore]::Update("packaging/feedrecyclebin/$($feed.id)", $body, 'application/json-patch+json', $null, $script:sharedData.ApiVersion, 'feeds.', $null)
+            $feed = Get-AzDevOpsRecycleBinFeed -Name $param.FeedName
+            $script:body = @{
+                op    = 'replace'
+                path  = '/isDeleted'
+                value = $false
+            } | ConvertTo-Json -Depth 2 -AsArray
+            $script:projectName = $feed.ProjectName
+            $script:feedId = $feed.Id
+            $script:function = $MyInvocation.MyCommand.Name
+            [AzureDevOps]::InvokeRequest()
         }
         catch {
             throw $_

@@ -14,19 +14,23 @@ function Remove-AzDevOpsProject {
         Get-AzDevOpsProject -Name 'ProjectName' | Remove-AzDevOpsProject
     .EXAMPLE
         Get-AzDevOpsProject | Remove-AzDevOpsProject
+    .NOTES
+        PAT Permission Scope: vso.project_manage
+        Description: Grants the ability to create, read, update, and delete projects and teams.
     #>
-
-    [CmdletBinding(DefaultParameterSetName = 'General')]
+    [CmdletBinding(DefaultParameterSetName = 'Default')]
     param (
-        [Parameter(Mandatory = $true, ParameterSetName = 'General')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'Default')]
+        [ValidateNotNullOrEmpty()]
         [string]$Name,
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = 'Pipeline')]
+        [ValidateNotNullOrEmpty()]
         [PSCustomObject]$PipelineObject,
         [switch]$Force
     )
     process {
         switch ($PSCmdlet.ParameterSetName) {
-            'General' {
+            'Default' {
                 $param = @{
                     Name = $Name
                 }
@@ -37,10 +41,11 @@ function Remove-AzDevOpsProject {
                 }
             }
         }
-        $project = Get-AzDevOpsProject -Name $param.Name
         try {
-            $project
-            [WebRequestAzureDevOpsCore]::Delete($project, $Force, $script:sharedData.ApiVersion).Value
+            Write-Output ($project = Get-AzDevOpsProject -Name $param.Name)
+            $script:projectId = $project.Id
+            $script:function = $MyInvocation.MyCommand.Name
+            [AzureDevOps]::DeleteRequest($project, $Force)
         }
         catch {
             throw $_

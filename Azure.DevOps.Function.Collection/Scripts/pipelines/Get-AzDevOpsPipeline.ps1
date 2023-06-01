@@ -9,18 +9,21 @@ function Get-AzDevOpsPipeline {
     .EXAMPLE
         Get-AzDevOpsPipeline -Project 'ProjectName' -Name 'PipelineName'
     #>
-
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
         [string]$Project,
         [string]$Name = '*'
     )
-    try {
-        $request = [WebRequestAzureDevOpsCore]::Get('pipelines', $script:sharedData.ApiVersionPreview, $Project, $null, $null)
-        Write-Output -InputObject $request.value.where{ $_.name -imatch "^$Name$" }.foreach{ $_ | Add-Member @{ project = $Project } -PassThru }
-    }
-    catch {
-        throw $_
+    end {
+        try {
+            $script:function = $MyInvocation.MyCommand.Name
+            $script:projectName = $Project
+            [AzureDevOpsPipeline]::Get().where{ $_.name -imatch "^$Name$" } 
+        }
+        catch {
+            throw $_
+        }
     }
 }
