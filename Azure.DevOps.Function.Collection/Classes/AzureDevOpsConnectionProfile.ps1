@@ -4,7 +4,7 @@ class AzureDevOpsConnectionProfile {
     [string]$private:EmailAddress
     [string]$private:OrganizationUrl
     [string]$private:CoreRevision
-    [string]$private:TimeStamp
+    $private:TimeStamp
     [string]$private:CountryName
     hidden [object]$private:Raw
 
