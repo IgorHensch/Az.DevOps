@@ -12,7 +12,7 @@
     RootModule        = 'Azure.DevOps.Function.Collection.psm1'
 
     # Version number of this module.
-    ModuleVersion     = '3.1.0'
+    ModuleVersion     = '3.1.1'
 
     # Supported PSEditions
     # CompatiblePSEditions = @()
@@ -33,7 +33,7 @@
     Description       = 'These modules include a collection of Powershell Functions for managing Azure DevOps'
 
     # Minimum version of the PowerShell engine required by this module
-    # PowerShellVersion = ''
+    PowerShellVersion = '7.0'
 
     # Name of the PowerShell host required by this module
     # PowerShellHostName = ''

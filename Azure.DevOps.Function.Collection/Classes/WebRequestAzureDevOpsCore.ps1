@@ -72,5 +72,11 @@ class WebRequestAzureDevOpsCore {
         $script:definitionId = $null
         $script:Path = $null
         $script:packageId = $null
+        $script:teamId = $null
+        $script:feedId = $null
+        $script:commitId = $null
+        $script:buildDefinitionId = $null
+        $script:pipelineId = $null
+        $script:approvalId = $null
     }
 }
