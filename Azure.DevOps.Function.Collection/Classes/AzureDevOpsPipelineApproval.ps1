@@ -61,7 +61,7 @@ class AzureDevOpsPipelineApproval {
             $build = $_
             $buildRecords = ($build | Get-AzDevOpsBuildTimeline).records | Select-Object type, state, identifier, id
             $buildStage = $buildRecords.where{ $_.type -eq 'Stage' -and $_.state -eq 'pending' }
-            $approval = $buildRecords.where{ $_.type -eq 'Checkpoint.Approval' }
+            $approval = $buildRecords.where{ $_.type -eq 'Checkpoint.Approval' -and $_.state -eq 'inProgress' }
             if ($buildStage.state -eq 'pending' -and -not [string]::IsNullOrEmpty($approval.id)) {
                 [AzureDevOpsPipelineApproval]::new($build, $buildStage, $approval)
             }
